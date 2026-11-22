@@ -4,8 +4,11 @@ import { config } from '../config.js';
 
 export const whatsappConfigured = () => Boolean(config.whatsapp.token && config.whatsapp.phoneNumberId);
 
-/** params: قيم متغيرات القالب بالترتيب {{1}}, {{2}}, ... */
-export async function sendWhatsAppTemplate({ to, templateName, params = [], fallbackText }) {
+/**
+ * params: قيم متغيرات القالب بالترتيب {{1}}, {{2}}, ...
+ * otpButton: لقوالب التحقق (Authentication) — Meta تشترط تمرير الرمز أيضًا لزر «نسخ الرمز».
+ */
+export async function sendWhatsAppTemplate({ to, templateName, params = [], fallbackText, otpButton = null }) {
   if (!whatsappConfigured()) {
     if (config.isProd && !config.demoMode) throw new Error('مزود واتساب غير مُعد (WHATSAPP_TOKEN / WHATSAPP_PHONE_NUMBER_ID)');
     if (!config.isTest) console.log(`[whatsapp:dev-log] → ${to} | ${templateName || 'no-template'} | ${fallbackText?.slice(0, 60)}`);
@@ -20,7 +23,10 @@ export async function sendWhatsAppTemplate({ to, templateName, params = [], fall
       messaging_product: 'whatsapp', to, type: 'template',
       template: {
         name: templateName, language: { code: config.whatsapp.templateLang },
-        components: params.length ? [{ type: 'body', parameters: params.map((p) => ({ type: 'text', text: String(p).replace(/\s+/g, ' ').slice(0, 1000) })) }] : [],
+        components: [
+          ...(params.length ? [{ type: 'body', parameters: params.map((p) => ({ type: 'text', text: String(p).replace(/\s+/g, ' ').slice(0, 1000) })) }] : []),
+          ...(otpButton ? [{ type: 'button', sub_type: 'url', index: '0', parameters: [{ type: 'text', text: String(otpButton) }] }] : []),
+        ],
       },
     }),
   });

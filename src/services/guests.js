@@ -93,7 +93,7 @@ export async function sendVerificationCode({ guestId = null, target, channel }) 
   if (channel === 'email') {
     await sendEmail({ to: t, subject: 'رمز التحقق — منزال', text: msg, html: `<div dir="rtl" style="font-family:Tahoma">${msg.replace('\n', '<br>')}</div>` });
   } else {
-    await sendWhatsAppTemplate({ to: t, templateName: 'menzal_otp', params: [code], fallbackText: msg });
+    await sendWhatsAppTemplate({ to: t, templateName: process.env.WHATSAPP_OTP_TEMPLATE || 'menzal_otp', params: [code], otpButton: code, fallbackText: msg });
   }
   // في التطوير أو وضع التجربة فقط، وعندما لا يكون مزود القناة مُعدًا: يُعاد الرمز لعرضه على الشاشة
   const providerReady = channel === 'email' ? emailConfigured() : whatsappConfigured();
