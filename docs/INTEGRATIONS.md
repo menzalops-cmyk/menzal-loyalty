@@ -19,7 +19,7 @@
     "unit_external_id": "APT-12",
     "check_in": "2026-11-01", "check_out": "2026-11-03",
     "guests_count": 2, "total_amount": 900, "refunded_amount": 0,
-    "guest": { "name": "...", "email": "...", "phone": "05..." }
+    "guest": { "name": "...", "phone": "05...", "email": "(اختياري)" }
   }
 }
 ```
@@ -36,7 +36,8 @@
 
 `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_TEMPLATE_LANG=ar`.
 الرسائل التي يبدأها النظام يجب أن تكون قوالب معتمدة لدى Meta. أنشئ القوالب ثم ضع أسماءها في `/admin/messages`:
-- `menzal_otp` (فئة Authentication): `{{1}}` = الرمز
+- `menzal_otp` (فئة Authentication) — **إلزامي**: رمز الدخول والتسجيل يُرسل به. `{{1}}` = الرمز
+  (بديل لاحق ممكن: مزود SMS سعودي مثل Unifonic أو Taqnyat لإرسال الرمز برسالة نصية)
 - قوالب الإشعارات حسب الحاجة مع ترتيب المتغيرات (مثل `name,balance`)
 - قوالب الحملات (فئة Marketing): `{{1}}` = الاسم، `{{2}}` = نص الرسالة
 

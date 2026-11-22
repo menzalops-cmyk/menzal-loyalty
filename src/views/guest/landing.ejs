@@ -10,7 +10,7 @@
     <div>
       <h1>كل إقامة في منزال تقرّبك من إقامتك القادمة</h1>
       <p>اجمع النقاط بعد كل إقامة، واحصل على خصومات وترقيات وتسجيل خروج متأخر — أينما كنت، ومتى ما عدت.</p>
-      <div class="row mt-2"><a href="/signup" class="btn btn-gold">أنشئ حسابك المجاني</a><a href="/login?mode=code" class="btn" style="color:#fff;border:1.5px solid rgba(255,255,255,.35)">حجزت معنا سابقًا؟</a></div>
+      <div class="row mt-2"><a href="/signup" class="btn btn-gold">أنشئ حسابك المجاني</a><a href="/login" class="btn" style="color:#fff;border:1.5px solid rgba(255,255,255,.35)">حجزت معنا سابقًا؟</a></div>
     </div>
     <div class="loyalty-card" style="max-width:380px;justify-self:center;width:100%">
       <div class="lc-top"><div><div class="lc-name">بطاقتك في منزال</div><div class="lc-member">MZ-0000000</div></div><span class="lc-tier"><i style="background:#c8963e"></i>ذهبي</span></div>
@@ -38,6 +38,6 @@
     <% tiers.forEach((t) => { %><div class="card"><div class="row"><span class="badge" style="background:<%= t.color %>;color:#fff"><%= t.name %></span></div><p class="small muted mt-1 mb-0"><%= t.min_stays ? `من ${t.min_stays} إقامات` : 'عند الانضمام' %><%= t.min_points ? ` و ${fmt.num(t.min_points)} نقطة` : '' %></p><p class="mb-0 mt-1"><%= t.perks %></p></div><% }) %>
   </div>
   <% } %>
-  <div class="card center mt-3"><h2>حجزت معنا من قبل بدون حساب؟</h2><p class="muted">أنشئ حسابك بنفس البريد أو الجوال الذي حجزت به، وبعد تأكيده سنربط إقاماتك السابقة ونحسب نقاطها.</p><a href="/signup" class="btn btn-primary">انضم الآن</a></div>
+  <div class="card center mt-3"><h2>حجزت معنا من قبل بدون حساب؟</h2><p class="muted">أنشئ حسابك برقم الجوال الذي حجزت به، وبعد تأكيده برمز سنربط إقاماتك السابقة ونحسب نقاطها تلقائيًا.</p><a href="/signup" class="btn btn-primary">انضم الآن</a></div>
 </main>
 <%- include('../partials/g-foot') %>

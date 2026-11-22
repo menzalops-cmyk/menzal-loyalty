@@ -8,19 +8,18 @@
       <input type="hidden" name="_csrf" value="<%= csrf %>">
       <input type="hidden" name="referral_code" value="<%= ref %>">
       <div class="field"><label for="full_name">الاسم الكامل</label><input id="full_name" name="full_name" required value="<%= form.full_name || '' %>" autocomplete="name"></div>
-      <div class="field"><label for="email">البريد الإلكتروني</label><input id="email" type="email" name="email" dir="ltr" required value="<%= form.email || '' %>" autocomplete="email"><div class="hint">استخدم البريد الذي حجزت به سابقًا لربط إقاماتك.</div></div>
-      <div class="field"><label for="phone">رقم الجوال <span class="muted">(اختياري)</span></label><input id="phone" type="tel" name="phone" dir="ltr" placeholder="05XXXXXXXX" value="<%= form.phone || '' %>" autocomplete="tel"></div>
+      <div class="field"><label for="phone">رقم الجوال</label><input id="phone" type="tel" name="phone" dir="ltr" inputmode="tel" placeholder="05XXXXXXXX" required value="<%= form.phone || '' %>" autocomplete="tel"><div class="hint">استخدم الرقم الذي تحجز به — سنربط حجوزاتك السابقة تلقائيًا. سيصلك رمز تأكيد عليه.</div></div>
+      <div class="field"><label for="email">البريد الإلكتروني <span class="muted">(اختياري)</span></label><input id="email" type="email" name="email" dir="ltr" value="<%= form.email || '' %>" autocomplete="email"></div>
       <div class="field"><label for="home_city">مدينتك <span class="muted">(اختياري)</span></label><input id="home_city" name="home_city" value="<%= form.home_city || '' %>"><div class="hint">تساعدنا على إرسال عروض تناسب مواعيد سفرك.</div></div>
-      <div class="field"><label for="password">كلمة المرور</label><input id="password" type="password" name="password" minlength="8" required autocomplete="new-password"></div>
       <fieldset>
         <legend>تفضيلات التواصل</legend>
-        <label class="check"><input type="checkbox" name="consent_email_marketing" <%= form.consent_email_marketing ? 'checked' : '' %>>أرغب في استقبال العروض الخاصة عبر البريد الإلكتروني</label>
         <label class="check"><input type="checkbox" id="consent_whatsapp" name="consent_whatsapp" <%= form.consent_whatsapp ? 'checked' : '' %>>أوافق على استقبال إشعارات حسابي (النقاط والمكافآت والحجوزات) عبر واتساب</label>
         <label class="check" id="wa_marketing_row"><input type="checkbox" name="consent_whatsapp_marketing" <%= form.consent_whatsapp_marketing ? 'checked' : '' %>>وأرغب أيضًا في استقبال العروض عبر واتساب</label>
+        <label class="check"><input type="checkbox" name="consent_email_marketing" <%= form.consent_email_marketing ? 'checked' : '' %>>أرغب في استقبال العروض عبر البريد الإلكتروني (إن أضفته)</label>
         <p class="hint mb-0">يمكنك تغيير هذه الخيارات أو إلغاء الاشتراك في أي وقت.</p>
       </fieldset>
       <label class="check"><input type="checkbox" name="accept_terms" required <%= form.accept_terms ? 'checked' : '' %>>أوافق على شروط برنامج الولاء وسياسة الخصوصية</label>
-      <button class="btn btn-primary btn-block mt-1">إنشاء الحساب</button>
+      <button class="btn btn-primary btn-block mt-1">أرسل رمز التأكيد</button>
     </form>
     <p class="center small mt-2 mb-0">لديك حساب؟ <a href="/login">سجّل الدخول</a></p>
   </div>

@@ -32,6 +32,3 @@
 <% } %>
 <main class="g-main">
 <%- include('flash') %>
-<% if (locals.guest && !guest.email_verified_at && path !== '/verify') { %>
-  <div class="alert alert-warn">أكّد بريدك الإلكتروني لربط حجوزاتك السابقة وتفعيل كامل المزايا. <a href="/verify"><b>تأكيد الآن</b></a></div>
-<% } %>

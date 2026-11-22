@@ -1,6 +1,6 @@
 <%- include('../partials/g-head') %>
 <div class="page-head row between"><div><h1>حجوزاتي</h1><p class="muted mb-0">إقاماتك السابقة والقادمة.</p></div><a href="/account/rebook" class="btn btn-gold">حجز جديد</a></div>
-<% if (!bookings.length) { %><div class="card empty"><span class="icon">🗓️</span>لا توجد حجوزات مرتبطة بحسابك بعد.<br><span class="small">حجزت سابقًا ببريد أو جوال مختلف؟ أضفه وأكّده من <a href="/account/preferences">التفضيلات</a>.</span></div><% } %>
+<% if (!bookings.length) { %><div class="card empty"><span class="icon">🗓️</span>لا توجد حجوزات مرتبطة بحسابك بعد.<br><span class="small">حجزت سابقًا ببريد إلكتروني؟ أضفه وأكّده من <a href="/account/preferences">التفضيلات</a>، ولأي رقم آخر تواصل مع منزال.</span></div><% } %>
 <div class="stack">
 <% bookings.forEach((b) => { %>
   <div class="booking-item">

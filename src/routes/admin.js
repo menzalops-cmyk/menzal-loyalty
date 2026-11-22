@@ -5,7 +5,7 @@ import { h, flash, createSession, destroySession, requireStaff, requirePerm, cli
 import { can, isLimitedAdjuster } from '../lib/permissions.js';
 import { AppError } from '../lib/errors.js';
 import { audit } from '../lib/audit.js';
-import { normalizeEmail } from '../lib/format.js';
+import { normalizeEmail, normalizePhone } from '../lib/format.js';
 import { dashboardKpis, SEGMENT_SQL, SEGMENT_LABELS } from '../services/kpis.js';
 import { adjustPoints, recomputeTier, cardSummary } from '../services/loyalty.js';
 import { issueVoucher, revokeVoucher } from '../services/rewards.js';
@@ -435,8 +435,8 @@ r.post('/campaigns', requirePerm('campaigns.manage'), h(async (req, res) => {
 }));
 r.post('/campaigns/:id/test', requirePerm('campaigns.manage'), h(async (req, res) => {
   const key = str(req.body.test_guest, 200);
-  const g = (await pool.query('SELECT id FROM guests WHERE email = $1 OR member_no = $2', [normalizeEmail(key), key])).rows[0];
-  if (!g) throw new AppError('لم يتم العثور على ضيف بهذا البريد أو رقم العضوية');
+  const g = (await pool.query('SELECT id FROM guests WHERE email = $1 OR member_no = $2 OR phone = $3', [normalizeEmail(key), key, normalizePhone(key)])).rows[0];
+  if (!g) throw new AppError('لم يتم العثور على ضيف بهذا الجوال أو البريد أو رقم العضوية');
   await sendCampaign(Number(req.params.id), { testGuestIds: [g.id], actorId: req.staff.id });
   flash(res, 'success', 'تم إرسال نسخة تجريبية (تُرسل فقط إذا كان لدى الضيف موافقة على القناة)');
   res.redirect(`/admin/campaigns/${req.params.id}`);

@@ -51,7 +51,7 @@
       <form class="card" method="post" action="/admin/campaigns/<%= c.id %>/test">
         <input type="hidden" name="_csrf" value="<%= csrf %>">
         <h3>إرسال تجريبي</h3>
-        <div class="field"><input name="test_guest" required placeholder="بريد الضيف أو رقم عضويته"></div>
+        <div class="field"><input name="test_guest" required placeholder="جوال الضيف أو رقم عضويته"></div>
         <button class="btn btn-ghost btn-sm">أرسل نسخة تجريبية</button>
       </form>
       <form class="card" method="post" action="/admin/campaigns/<%= c.id %>/schedule">

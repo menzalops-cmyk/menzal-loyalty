@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { pool, tx } from '../db.js';
 import { h, flash, requireGuest } from '../lib/web.js';
 import { randomToken } from '../lib/crypto.js';
-import { normalizePhone } from '../lib/format.js';
+import { normalizeEmail } from '../lib/format.js';
 import { cardSummary } from '../services/loyalty.js';
 import { catalogForGuest, redeemPoints, computeVoucherEffect } from '../services/rewards.js';
 import { createGuestBooking, quote, rebookSuggestions } from '../services/bookings.js';
@@ -164,13 +164,15 @@ r.post('/preferences', h(async (req, res) => {
     await setConsent(c, req.guest.id, 'whatsapp', b.consent_whatsapp === 'on', 'preferences');
     await setConsent(c, req.guest.id, 'whatsapp_marketing', b.consent_whatsapp === 'on' && b.consent_whatsapp_marketing === 'on', 'preferences');
     if (b.home_city !== undefined) await c.query('UPDATE guests SET home_city = $2 WHERE id = $1', [req.guest.id, String(b.home_city).slice(0, 80) || null]);
-    if (b.phone !== undefined) {
-      const phone = normalizePhone(b.phone);
-      if (phone !== req.guest.phone) {
-        if (b.phone && !phone) throw new AppError('رقم الجوال غير صحيح');
-        const taken = phone && (await c.query('SELECT 1 FROM guests WHERE phone = $1 AND id <> $2', [phone, req.guest.id])).rowCount;
-        if (taken) throw new AppError('رقم الجوال مستخدم في حساب آخر');
-        await c.query('UPDATE guests SET phone = $2, phone_verified_at = NULL WHERE id = $1', [req.guest.id, phone]);
+    if (b.email !== undefined) {
+      const email = normalizeEmail(b.email);
+      if (b.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new AppError('البريد الإلكتروني غير صحيح');
+      if (email !== req.guest.email) {
+        const taken = email && (await c.query('SELECT 1 FROM guests WHERE email = $1 AND id <> $2', [email, req.guest.id])).rowCount;
+        if (taken) throw new AppError('البريد الإلكتروني مستخدم في حساب آخر');
+        await c.query('UPDATE guests SET email = $2, email_verified_at = NULL WHERE id = $1', [req.guest.id, email]);
+        // بدون بريد لا معنى لموافقة البريد التسويقية
+        if (!email) await setConsent(c, req.guest.id, 'email_marketing', false, 'preferences');
       }
     }
   });

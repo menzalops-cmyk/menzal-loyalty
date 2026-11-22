@@ -16,12 +16,11 @@ export async function makeGuest(overrides = {}) {
   const g = await tx((c) => signup(c, {
     fullName: overrides.fullName || `ضيف تجريبي ${n}`,
     email: overrides.email || `guest${n}_${Date.now()}@test.local`,
-    phone: overrides.phone ?? null,
-    password: 'Password123',
+    phone: overrides.phone || `05${String(10000000 + Math.floor(Math.random() * 89999999)).slice(0, 8)}`,
     referralCode: overrides.referralCode,
     consents: overrides.consents || { email_marketing: true },
   }));
-  if (overrides.verified !== false) await pool.query('UPDATE guests SET email_verified_at = now() WHERE id = $1', [g.id]);
+  if (overrides.verified !== false) await pool.query('UPDATE guests SET email_verified_at = now(), phone_verified_at = now() WHERE id = $1', [g.id]);
   return (await pool.query('SELECT * FROM guests WHERE id = $1', [g.id])).rows[0];
 }
 

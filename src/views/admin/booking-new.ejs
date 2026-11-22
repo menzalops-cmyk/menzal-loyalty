@@ -1,13 +1,13 @@
 <%- include('../partials/a-head') %>
 <a href="/admin/bookings" class="small">→ الحجوزات</a>
 <div class="a-top mt-1"><h1>تسجيل حجز أو إقامة</h1></div>
-<div class="alert alert-info small">استخدم هذا النموذج للحجوزات الهاتفية أو المباشرة، أو لتسجيل إقامات سابقة. إذا كان للضيف حساب موثق بنفس البريد/الجوال سيُربط فورًا، وإلا سيُربط تلقائيًا عند إنشائه حسابًا وتأكيد بياناته. اختيار «مكتملة» يمنح النقاط فورًا (يتطلب أن يكون تاريخ المغادرة قد مضى).</div>
+<div class="alert alert-info small">استخدم هذا النموذج للحجوزات الهاتفية أو المباشرة، أو لتسجيل إقامات سابقة. إذا كان للضيف حساب بنفس رقم الجوال سيُربط فورًا، وإلا سيُربط تلقائيًا عند إنشائه حسابًا بهذا الرقم. اختيار «مكتملة» يمنح النقاط فورًا (يتطلب أن يكون تاريخ المغادرة قد مضى).</div>
 <form class="card" method="post" action="/admin/bookings" style="max-width:760px">
   <input type="hidden" name="_csrf" value="<%= csrf %>">
   <fieldset><legend>الضيف</legend><div class="form-grid">
     <div class="field"><label>الاسم</label><input name="contact_name" required></div>
-    <div class="field"><label>البريد الإلكتروني</label><input type="email" name="contact_email" dir="ltr"></div>
-    <div class="field"><label>الجوال</label><input type="tel" name="contact_phone" dir="ltr" placeholder="05XXXXXXXX"></div>
+    <div class="field"><label>الجوال</label><input type="tel" name="contact_phone" dir="ltr" placeholder="05XXXXXXXX" required><div class="hint">المعرف الأساسي لربط الحجز بحساب الضيف</div></div>
+    <div class="field"><label>البريد الإلكتروني <span class="muted">(اختياري)</span></label><input type="email" name="contact_email" dir="ltr"></div>
   </div></fieldset>
   <fieldset><legend>الإقامة</legend><div class="form-grid">
     <div class="field"><label>الوحدة</label><select name="unit_id" required><% units.forEach((u) => { %><option value="<%= u.id %>"><%= u.name %> — <%= u.city %> (<%= fmt.money(u.nightly_price) %>)</option><% }) %></select></div>

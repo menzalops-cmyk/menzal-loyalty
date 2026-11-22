@@ -5,9 +5,9 @@
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <h3>بياناتي</h3>
     <dl class="dl mb-2"><dt>الاسم</dt><dd><%= guest.full_name %></dd><dt>رقم العضوية</dt><dd dir="ltr" style="text-align:right"><%= guest.member_no %></dd>
-      <dt>البريد</dt><dd><span dir="ltr"><%= guest.email %></span> <%- guest.email_verified_at ? '<span class="badge badge-green">مؤكد</span>' : '<a href="/verify" class="badge badge-gold">تأكيد</a>' %></dd></dl>
-    <div class="field"><label for="phone">رقم الجوال</label><input id="phone" type="tel" name="phone" dir="ltr" value="<%= guest.phone || '' %>" placeholder="05XXXXXXXX">
-      <div class="hint"><% if (guest.phone) { %><%= guest.phone_verified_at ? 'مؤكد ✓' : 'غير مؤكد — التأكيد يربط الحجوزات المسجلة بهذا الرقم' %><% } %></div></div>
+      <dt>رقم الجوال</dt><dd><span dir="ltr">+<%= guest.phone %></span> <span class="badge badge-green">مؤكد</span><div class="tiny muted">رقم الدخول — لتغييره تواصل مع منزال</div></dd></dl>
+    <div class="field"><label for="email">البريد الإلكتروني <span class="muted">(اختياري)</span></label><input id="email" type="email" name="email" dir="ltr" value="<%= guest.email || '' %>">
+      <div class="hint"><% if (guest.email) { %><%- guest.email_verified_at ? 'مؤكد ✓' : 'غير مؤكد — <a href="#verify-email">أكّده</a> لتصلك الرسائل عليه' %><% } else { %>أضفه لتصلك الإشعارات والعروض عبر البريد<% } %></div></div>
     <div class="field"><label for="home_city">مدينتي</label><input id="home_city" name="home_city" value="<%= guest.home_city || '' %>"></div>
     <h3 class="mt-2">التواصل والعروض</h3>
     <label class="check"><input type="checkbox" name="consent_email_marketing" <%= guest.consent_email_marketing ? 'checked' : '' %>>العروض الخاصة عبر البريد الإلكتروني</label>
@@ -17,9 +17,9 @@
     <button class="btn btn-primary">حفظ</button>
   </form>
   <div class="stack">
-    <% if (guest.phone && !guest.phone_verified_at) { %>
-    <form class="card" method="post" action="/verify/resend"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="channel" value="phone">
-      <h3>تأكيد رقم الجوال</h3><p class="small muted">سنرسل رمزًا عبر واتساب لتأكيد الرقم وربط أي حجوزات مسجلة به.</p><button class="btn btn-ghost">أرسل رمز التأكيد</button></form>
+    <% if (guest.email && !guest.email_verified_at) { %>
+    <form class="card" id="verify-email" method="post" action="/verify/resend"><input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h3>تأكيد البريد الإلكتروني</h3><p class="small muted">سنرسل رمزًا إلى <span dir="ltr"><%= guest.email %></span>.</p><button class="btn btn-ghost">أرسل رمز التأكيد</button></form>
     <% } %>
     <form class="card" method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><h3>الجلسة</h3><button class="btn btn-danger"><%- include('../partials/icon', { name: 'logout' }) %> تسجيل الخروج</button></form>
   </div>
