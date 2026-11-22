@@ -1,0 +1,86 @@
+<%- include('../partials/a-head') %>
+<a href="/admin/guests" class="small">→ الضيوف</a>
+<div class="a-top mt-1">
+  <div><h1><%= g.full_name %> <% if (g.status !== 'active') { %><span class="badge badge-red">موقوف</span><% } %></h1><p class="muted small mb-0" dir="ltr" style="text-align:right"><%= g.member_no %></p></div>
+  <div class="row"><span class="badge badge-teal"><%= g.tier_name || 'بدون مستوى' %></span></div>
+</div>
+<div class="grid grid-4">
+  <div class="kpi accent"><div class="k-label">رصيد النقاط</div><div class="k-value num"><%= fmt.num(g.points_balance) %></div><div class="k-sub">مدى الحياة: <span class="num"><%= fmt.num(g.lifetime_points) %></span></div></div>
+  <div class="kpi"><div class="k-label">الإقامات المكتملة</div><div class="k-value num"><%= g.completed_stays %></div><div class="k-sub">أختام: <span class="num"><%= g.stamp_count %></span></div></div>
+  <div class="kpi"><div class="k-label">إجمالي الإنفاق</div><div class="k-value num"><%= fmt.money(stats.spend) %></div><div class="k-sub"><span class="num"><%= stats.bookings %></span> حجز</div></div>
+  <div class="kpi"><div class="k-label">آخر حجز</div><div class="k-value" style="font-size:1.1rem"><%= fmt.date(stats.last_booking) %></div><div class="k-sub">عضو منذ <%= fmt.date(g.created_at) %></div></div>
+</div>
+<div class="grid grid-2 mt-2" style="align-items:start">
+  <div class="card">
+    <h3>البيانات الأساسية</h3>
+    <dl class="dl">
+      <% if (showContact) { %>
+      <dt>البريد</dt><dd dir="ltr" style="text-align:right"><%= g.email || '—' %> <%- g.email_verified_at ? '<span class="badge badge-green">مؤكد</span>' : '<span class="badge">غير مؤكد</span>' %></dd>
+      <dt>الجوال</dt><dd dir="ltr" style="text-align:right"><%= g.phone || '—' %> <%- g.phone ? (g.phone_verified_at ? '<span class="badge badge-green">مؤكد</span>' : '<span class="badge">غير مؤكد</span>') : '' %></dd>
+      <% } else { %><dt>التواصل</dt><dd class="muted">مخفي حسب الصلاحية</dd><% } %>
+      <dt>المدينة</dt><dd><%= g.home_city || '—' %></dd>
+      <dt>كود الإحالة</dt><dd dir="ltr" style="text-align:right"><%= g.referral_code %></dd>
+      <dt>الموافقات</dt><dd class="small">بريد تسويقي: <%= g.consent_email_marketing ? '✓' : '✗' %> · واتساب: <%= g.consent_whatsapp ? '✓' : '✗' %> · واتساب تسويقي: <%= g.consent_whatsapp_marketing ? '✓' : '✗' %></dd>
+    </dl>
+    <% if (can('loyalty.manage')) { %>
+    <form method="post" action="/admin/guests/<%= g.id %>/status" class="row mt-2"><input type="hidden" name="_csrf" value="<%= csrf %>">
+      <input type="hidden" name="status" value="<%= g.status === 'active' ? 'suspended' : 'active' %>"><input name="reason" placeholder="السبب" required style="flex:1">
+      <button class="btn btn-sm <%= g.status === 'active' ? 'btn-danger' : 'btn-ghost' %>"><%= g.status === 'active' ? 'إيقاف الحساب' : 'إعادة التفعيل' %></button></form>
+    <% } %>
+  </div>
+  <div class="stack">
+    <% if (can('points.adjust')) { %>
+    <form class="card" method="post" action="/admin/guests/<%= g.id %>/adjust">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h3>تعديل رصيد النقاط</h3>
+      <div class="form-grid">
+        <div class="field"><label>النوع</label><select name="direction"><option value="add">إضافة</option><option value="deduct">خصم</option></select></div>
+        <div class="field"><label>النقاط</label><input type="number" name="points" min="1" <%= adjustLimit ? `max="${adjustLimit}"` : '' %> required></div>
+      </div>
+      <div class="field"><label>سبب التعديل (إلزامي)</label><input name="reason" required minlength="5" placeholder="مثال: تعويض عن تأخر تسليم الوحدة"></div>
+      <% if (adjustLimit) { %><p class="hint">الحد الأقصى لصلاحيتك: <span class="num"><%= adjustLimit %></span> نقطة في العملية.</p><% } %>
+      <button class="btn btn-primary btn-sm" data-confirm="تأكيد تعديل الرصيد؟ ستُسجل العملية باسمك.">تنفيذ وتسجيل</button>
+    </form>
+    <% } %>
+    <% if (can('rewards.issue')) { %>
+    <form class="card" method="post" action="/admin/guests/<%= g.id %>/issue">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h3>منح مكافأة يدويًا</h3>
+      <div class="field"><select name="reward_id" required><% rewards.forEach((r) => { %><option value="<%= r.id %>"><%= r.name %></option><% }) %></select></div>
+      <div class="field"><input name="reason" required placeholder="السبب"></div>
+      <button class="btn btn-ghost btn-sm">منح</button>
+    </form>
+    <% } %>
+  </div>
+</div>
+
+<div class="section-title"><h2>الحجوزات</h2></div>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>الحجز</th><th>الوحدة</th><th>التواريخ</th><th>المبلغ</th><th>متكرر</th><th>الحالة</th></tr></thead>
+  <tbody><% if (!bookings.length) { %><tr><td colspan="6" class="empty">لا توجد حجوزات</td></tr><% } %>
+  <% bookings.forEach((b) => { %><tr><td><a href="/admin/bookings/<%= b.id %>" dir="ltr"><%= b.booking_ref %></a></td><td><%= b.unit_name %></td><td class="small nowrap"><%= fmt.date(b.check_in) %> ← <%= fmt.date(b.check_out) %></td><td class="num"><%= fmt.money(b.total_amount) %></td><td><%= b.is_repeat ? '✓' : '' %></td><td><span class="badge badge-<%= b.status %>"><%= L.booking[b.status] %></span></td></tr><% }) %></tbody>
+</table></div></div>
+
+<div class="section-title"><h2>سجل النقاط</h2></div>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>التاريخ</th><th>النوع</th><th>السبب</th><th>النقاط</th><th>الرصيد</th><th>بواسطة</th></tr></thead>
+  <tbody><% if (!ledger.length) { %><tr><td colspan="6" class="empty">لا توجد عمليات</td></tr><% } %>
+  <% ledger.forEach((l) => { %><tr><td class="small nowrap"><%= fmt.dateTime(l.created_at) %></td><td><span class="badge"><%= L.ledger[l.entry_type] %></span></td><td class="small"><%= l.reason %></td><td class="num <%= l.points > 0 ? 'pos' : 'neg' %>"><%= l.points > 0 ? '+' : '' %><%= fmt.num(l.points) %></td><td class="num"><%= fmt.num(l.balance_after) %></td><td class="small"><%= l.staff_name || 'النظام' %></td></tr><% }) %></tbody>
+</table></div></div>
+
+<div class="grid grid-2 mt-3" style="align-items:start">
+  <div class="card" style="padding:0"><div style="padding:1rem 1rem 0"><h3>المكافآت</h3></div><div class="table-wrap"><table>
+    <thead><tr><th>المكافأة</th><th>المصدر</th><th>الحالة</th><th></th></tr></thead>
+    <tbody><% if (!vouchers.length) { %><tr><td colspan="4" class="empty">لا توجد</td></tr><% } %>
+    <% vouchers.forEach((v) => { %><tr><td><%= v.name %><div class="tiny muted" dir="ltr" style="text-align:right"><%= v.code %></div></td><td class="small"><%= v.source %></td><td><span class="badge badge-<%= v.status %>"><%= L.voucher[v.status] %></span></td>
+      <td><% if (v.status === 'available' && can('rewards.issue')) { %><form method="post" action="/admin/vouchers/<%= v.id %>/revoke" class="row" style="gap:.3rem"><input type="hidden" name="_csrf" value="<%= csrf %>"><input name="reason" placeholder="سبب" required style="width:90px;min-height:32px;padding:.2rem .4rem"><button class="btn btn-danger btn-sm" data-confirm="إلغاء المكافأة؟ ستُعاد النقاط إن كانت مستبدلة.">إلغاء</button></form><% } %></td></tr><% }) %></tbody>
+  </table></div></div>
+  <div class="card">
+    <h3>الإحالات</h3>
+    <% if (!referrals.length) { %><p class="muted mb-0">لا توجد</p><% } %>
+    <% referrals.forEach((r) => { %><div class="summary-line small"><span><%= r.referrer_id === g.id ? `أحال ${r.referee_name}` : `أُحيل من ${r.referrer_name}` %></span><span class="badge badge-<%= r.status %>"><%= L.referral[r.status] %></span></div><% }) %>
+    <h3 class="mt-2">آخر الرسائل</h3>
+    <% notes.slice(0, 8).forEach((n) => { %><div class="summary-line small"><span><%= L.channel[n.channel] %> · <%= n.subject %></span><span class="badge badge-<%= n.status %>"><%= L.notif[n.status] %></span></div><% }) %>
+  </div>
+</div>
+<%- include('../partials/a-foot') %>

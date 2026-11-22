@@ -1,0 +1,28 @@
+<%- include('../partials/g-head') %>
+<div class="page-head"><h1>ادعُ أصدقاءك</h1><p class="muted mb-0">شارك منزال مع من تحب — وعندما يكمل صديقك أول إقامة يحصل كلاكما على مكافأة.</p></div>
+<div class="grid grid-2" style="align-items:start">
+  <div class="card">
+    <h3>رابط الدعوة الخاص بك</h3>
+    <div class="share-box"><input id="reflink" readonly value="<%= link %>"><button class="btn btn-ghost btn-sm" type="button" data-copy="#reflink">نسخ</button></div>
+    <% const msg = `جرّب الإقامة في منزال! سجّل من رابطي واحصل على هدية على أول حجز: ${link}`; %>
+    <div class="row mt-2">
+      <a class="btn btn-primary btn-sm" href="https://wa.me/?text=<%= encodeURIComponent(msg) %>" target="_blank" rel="noopener"><%- include('../partials/icon', { name: 'whatsapp' }) %> شارك عبر واتساب</a>
+      <a class="btn btn-ghost btn-sm" href="<%= link %>" data-share="<%= link %>" data-text="جرّب الإقامة في منزال!"><%- include('../partials/icon', { name: 'share' }) %> مشاركة</a>
+    </div>
+    <% if (rules && rules.active) { %>
+    <div class="mt-2 small">
+      <div class="summary-line"><span>أنت تحصل على</span><b><%= [rules.referrer_points ? `${fmt.num(rules.referrer_points)} نقطة` : null, referrerReward].filter(Boolean).join(' + ') || '—' %></b></div>
+      <div class="summary-line"><span>صديقك يحصل على</span><b><%= refereeReward || '—' %></b></div>
+      <p class="tiny muted mt-1 mb-0">تُمنح المكافأة بعد اكتمال أول إقامة لصديقك<%= rules.min_booking_amount > 0 ? ` بقيمة ${fmt.money(rules.min_booking_amount)} أو أكثر` : '' %>. الصديق يجب أن يكون جديدًا على منزال.</p>
+    </div>
+    <% } else { %><div class="alert alert-info mt-2 mb-0">برنامج الإحالة متوقف مؤقتًا.</div><% } %>
+  </div>
+  <div class="card">
+    <div class="row between"><h3 class="mb-0">دعواتك</h3><span class="small muted"><span class="num"><%= list.filter((x) => x.status === 'rewarded').length %></span> ناجحة</span></div>
+    <% if (!list.length) { %><p class="muted mt-1 mb-0">لم ينضم أحد عبر رابطك بعد.</p><% } %>
+    <% list.forEach((x) => { %>
+      <div class="summary-line"><span><%= x.friend_first_name %> <span class="tiny muted">· <%= fmt.date(x.created_at) %></span></span><span class="badge badge-<%= x.status %>"><%= L.referral[x.status] %></span></div>
+    <% }) %>
+  </div>
+</div>
+<%- include('../partials/g-foot') %>

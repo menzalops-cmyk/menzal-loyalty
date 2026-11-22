@@ -1,0 +1,27 @@
+<%- include('../partials/g-head') %>
+<div class="page-head"><h1>التفضيلات والخصوصية</h1></div>
+<div class="grid grid-2" style="align-items:start">
+  <form class="card" method="post" action="/account/preferences">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <h3>بياناتي</h3>
+    <dl class="dl mb-2"><dt>الاسم</dt><dd><%= guest.full_name %></dd><dt>رقم العضوية</dt><dd dir="ltr" style="text-align:right"><%= guest.member_no %></dd>
+      <dt>البريد</dt><dd><span dir="ltr"><%= guest.email %></span> <%- guest.email_verified_at ? '<span class="badge badge-green">مؤكد</span>' : '<a href="/verify" class="badge badge-gold">تأكيد</a>' %></dd></dl>
+    <div class="field"><label for="phone">رقم الجوال</label><input id="phone" type="tel" name="phone" dir="ltr" value="<%= guest.phone || '' %>" placeholder="05XXXXXXXX">
+      <div class="hint"><% if (guest.phone) { %><%= guest.phone_verified_at ? 'مؤكد ✓' : 'غير مؤكد — التأكيد يربط الحجوزات المسجلة بهذا الرقم' %><% } %></div></div>
+    <div class="field"><label for="home_city">مدينتي</label><input id="home_city" name="home_city" value="<%= guest.home_city || '' %>"></div>
+    <h3 class="mt-2">التواصل والعروض</h3>
+    <label class="check"><input type="checkbox" name="consent_email_marketing" <%= guest.consent_email_marketing ? 'checked' : '' %>>العروض الخاصة عبر البريد الإلكتروني</label>
+    <label class="check"><input type="checkbox" id="consent_whatsapp" name="consent_whatsapp" <%= guest.consent_whatsapp ? 'checked' : '' %>>إشعارات حسابي عبر واتساب (النقاط، المكافآت، الحجوزات)</label>
+    <label class="check" id="wa_marketing_row"><input type="checkbox" name="consent_whatsapp_marketing" <%= guest.consent_whatsapp_marketing ? 'checked' : '' %>>العروض الخاصة عبر واتساب</label>
+    <p class="hint">إشعارات الحساب داخل النظام والبريد الخدمي (مثل إضافة النقاط) تصلك دائمًا. لن نرسل أي عرض تسويقي دون موافقتك.</p>
+    <button class="btn btn-primary">حفظ</button>
+  </form>
+  <div class="stack">
+    <% if (guest.phone && !guest.phone_verified_at) { %>
+    <form class="card" method="post" action="/verify/resend"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="channel" value="phone">
+      <h3>تأكيد رقم الجوال</h3><p class="small muted">سنرسل رمزًا عبر واتساب لتأكيد الرقم وربط أي حجوزات مسجلة به.</p><button class="btn btn-ghost">أرسل رمز التأكيد</button></form>
+    <% } %>
+    <form class="card" method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><h3>الجلسة</h3><button class="btn btn-danger"><%- include('../partials/icon', { name: 'logout' }) %> تسجيل الخروج</button></form>
+  </div>
+</div>
+<%- include('../partials/g-foot') %>

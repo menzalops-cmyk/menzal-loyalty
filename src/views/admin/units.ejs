@@ -1,0 +1,29 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>الوحدات</h1></div>
+<div class="grid grid-2" style="align-items:start">
+  <div class="card" style="padding:0"><div class="table-wrap"><table>
+    <thead><tr><th>الوحدة</th><th>المدينة</th><th>السعر</th><th>إقامات</th><th></th></tr></thead>
+    <tbody><% rows.forEach((u) => { %><tr style="<%= u.active ? '' : 'opacity:.5' %>"><td><b><%= u.name %></b><div class="tiny muted"><%= u.unit_type %> · <%= u.capacity %> أشخاص<%= u.external_id ? ` · ${u.external_id}` : '' %></div></td><td class="small"><%= u.city %></td><td class="num"><%= fmt.money(u.nightly_price) %></td><td class="num"><%= u.stays %></td><td><a href="/admin/units?edit=<%= u.id %>" class="btn btn-ghost btn-sm">تعديل</a></td></tr><% }) %></tbody>
+  </table></div></div>
+  <form class="card" method="post" action="/admin/units">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <% const u = edit || { active: true }; %>
+    <input type="hidden" name="id" value="<%= u.id || '' %>">
+    <h3><%= edit ? `تعديل: ${u.name}` : 'إضافة وحدة' %></h3>
+    <div class="field"><label>الاسم</label><input name="name" value="<%= u.name || '' %>" required></div>
+    <div class="form-grid">
+      <div class="field"><label>المدينة</label><input name="city" value="<%= u.city || '' %>" required></div>
+      <div class="field"><label>الحي</label><input name="district" value="<%= u.district || '' %>"></div>
+      <div class="field"><label>النوع</label><input name="unit_type" value="<%= u.unit_type || '' %>" placeholder="شقة / استوديو / فيلا" required></div>
+      <div class="field"><label>غرف النوم</label><input type="number" name="bedrooms" value="<%= u.bedrooms || 1 %>" min="0"></div>
+      <div class="field"><label>السعة</label><input type="number" name="capacity" value="<%= u.capacity || 2 %>" min="1"></div>
+      <div class="field"><label>سعر الليلة</label><input type="number" step="0.01" name="nightly_price" value="<%= u.nightly_price || '' %>" required></div>
+    </div>
+    <div class="field"><label>رابط الصورة (https)</label><input name="image_url" dir="ltr" value="<%= u.image_url || '' %>"></div>
+    <div class="field"><label>المعرف في نظام الحجز الخارجي</label><input name="external_id" dir="ltr" value="<%= u.external_id || '' %>"><div class="hint">يُستخدم لمطابقة الوحدة عند استقبال الحجوزات عبر التكامل.</div></div>
+    <div class="field"><label>الوصف</label><textarea name="description" style="min-height:70px"><%= u.description || '' %></textarea></div>
+    <label class="check"><input type="checkbox" name="active" <%= u.active ? 'checked' : '' %>>متاحة للحجز</label>
+    <div class="row"><button class="btn btn-primary">حفظ</button><% if (edit) { %><a href="/admin/units" class="btn btn-ghost">إلغاء</a><% } %></div>
+  </form>
+</div>
+<%- include('../partials/a-foot') %>

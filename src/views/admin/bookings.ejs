@@ -1,0 +1,21 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>الحجوزات</h1><% if (can('bookings.manage')) { %><a href="/admin/bookings/new" class="btn btn-primary">تسجيل حجز / إقامة</a><% } %></div>
+<form class="card row mb-2" method="get" style="gap:.5rem">
+  <input type="search" name="q" value="<%= q || '' %>" placeholder="رقم الحجز، الاسم، البريد أو الجوال" style="flex:1;min-width:200px">
+  <select name="status" style="width:auto"><option value="">كل الحالات</option><% Object.entries(L.booking).forEach(([k, v]) => { %><option value="<%= k %>" <%= status === k ? 'selected' : '' %>><%= v %></option><% }) %></select>
+  <button class="btn btn-primary">تصفية</button>
+</form>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>الحجز</th><th>الضيف</th><th>الوحدة</th><th>التواريخ</th><th>المبلغ</th><th>المصدر</th><th>الحالة</th></tr></thead>
+  <tbody><% if (!rows.length) { %><tr><td colspan="7" class="empty">لا توجد حجوزات</td></tr><% } %>
+  <% rows.forEach((b) => { %><tr>
+    <td><a href="/admin/bookings/<%= b.id %>" dir="ltr"><b><%= b.booking_ref %></b></a><% if (b.is_repeat) { %> <span class="badge badge-gold">متكرر</span><% } %></td>
+    <td><%= b.contact_name %><div class="tiny muted"><%= b.guest_id ? `عضو ${b.member_no}` : 'غير مرتبط بحساب' %></div></td>
+    <td class="small"><%= b.unit_name %></td>
+    <td class="small nowrap"><%= fmt.date(b.check_in) %> · <span class="num"><%= b.nights %></span> ل</td>
+    <td class="num"><%= fmt.money(b.total_amount) %><% if (b.discount_amount > 0) { %><div class="tiny pos">خصم <%= fmt.money(b.discount_amount) %></div><% } %></td>
+    <td class="small"><%= b.source === 'external' ? 'تكامل خارجي' : 'منزال' %></td>
+    <td><span class="badge badge-<%= b.status %>"><%= L.booking[b.status] %></span></td>
+  </tr><% }) %></tbody>
+</table></div></div>
+<%- include('../partials/a-foot') %>

@@ -1,0 +1,19 @@
+<%- include('../partials/g-head') %>
+<div class="auth-wrap">
+  <div class="card">
+    <h1>تأكيد <%= channel === 'phone' ? 'رقم الجوال' : 'البريد الإلكتروني' %></h1>
+    <p class="muted">أدخل الرمز المكوّن من 6 أرقام الذي أرسلناه إلى <b dir="ltr"><%= channel === 'phone' ? guest.phone : guest.email %></b>. بعد التأكيد سنبحث عن حجوزاتك السابقة ونربطها بحسابك.</p>
+    <% if (devCode) { %><div class="alert alert-warn small">وضع التطوير (مزود الرسائل غير مُعد): الرمز <b class="num"><%= devCode %></b></div><% } %>
+    <form method="post" action="/verify">
+      <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="channel" value="<%= channel %>">
+      <div class="field"><input name="code" class="otp" inputmode="numeric" maxlength="6" required autocomplete="one-time-code" aria-label="رمز التحقق"></div>
+      <button class="btn btn-primary btn-block">تأكيد</button>
+    </form>
+    <form method="post" action="/verify/resend" class="center mt-2">
+      <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="channel" value="<%= channel %>">
+      <button class="linklike small">لم يصلك الرمز؟ أعد الإرسال</button>
+    </form>
+    <p class="center small mt-1 mb-0"><a href="/account">لاحقًا</a></p>
+  </div>
+</div>
+<%- include('../partials/g-foot') %>

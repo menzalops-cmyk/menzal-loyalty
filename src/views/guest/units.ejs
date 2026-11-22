@@ -1,0 +1,5 @@
+<%- include('../partials/g-head') %>
+<div class="page-head"><h1>وحدات منزال</h1></div>
+<div class="tabs"><a href="/units" class="<%= !city ? 'active' : '' %>">الكل</a><% cities.forEach((c) => { %><a href="/units?city=<%= encodeURIComponent(c) %>" class="<%= city === c ? 'active' : '' %>"><%= c %></a><% }) %></div>
+<div class="grid grid-3"><% units.forEach((u) => { %><%- include('../partials/unit-card', { u }) %><% }) %></div>
+<%- include('../partials/g-foot') %>

@@ -1,0 +1,15 @@
+<% if (s.stamps.goal) { %>
+<div class="card">
+  <div class="row between"><h3 class="mb-0">بطاقة الأختام</h3><span class="muted small num"><%= s.stamps.onCard %> / <%= s.stamps.goal %></span></div>
+  <div class="stamps" aria-label="الأختام">
+    <% for (let i = 0; i < s.stamps.goal; i++) { %>
+      <span class="stamp <%= i < s.stamps.onCard ? 'on' : '' %>"><%- include('icon', { name: i < s.stamps.onCard ? 'check' : 'home' }) %></span>
+    <% } %>
+    <span class="stamp gift" title="المكافأة"><%- include('icon', { name: 'gift' }) %></span>
+  </div>
+  <p class="small muted mb-0">
+    <% const left = s.stamps.goal - s.stamps.onCard; %>
+    ختم مع كل إقامة مكتملة. <%= left === s.stamps.goal && s.guest.stamp_count > 0 ? 'أكملت بطاقة! ' : '' %>باقي <b class="num"><%= left %></b> <%= left === 1 ? 'إقامة' : 'إقامات' %> للحصول على «<%= s.stamps.rewardName || 'مكافأة' %>».
+  </p>
+</div>
+<% } %>

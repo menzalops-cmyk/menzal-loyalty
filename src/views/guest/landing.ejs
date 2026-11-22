@@ -1,0 +1,42 @@
+<%- include('../partials/doc-head') %>
+<body>
+<header class="g-header" style="background:transparent;border:0;position:absolute;inset-inline:0">
+  <div class="inner"><%- include('../partials/logo', { light: true, sub: 'نادي الضيوف' }) %>
+  <div class="row"><a href="/login" class="btn btn-sm" style="color:#fff">دخول</a><a href="/signup" class="btn btn-gold btn-sm">انضم مجانًا</a></div></div>
+</header>
+<section class="hero" style="padding-top:5rem">
+  <div class="inner">
+    <div>
+      <h1>كل إقامة في منزال تقرّبك من إقامتك القادمة</h1>
+      <p>اجمع النقاط بعد كل إقامة، واحصل على خصومات وترقيات وتسجيل خروج متأخر — أينما كنت، ومتى ما عدت.</p>
+      <div class="row mt-2"><a href="/signup" class="btn btn-gold">أنشئ حسابك المجاني</a><a href="/login?mode=code" class="btn" style="color:#fff;border:1.5px solid rgba(255,255,255,.35)">حجزت معنا سابقًا؟</a></div>
+    </div>
+    <div class="loyalty-card" style="max-width:380px;justify-self:center;width:100%">
+      <div class="lc-top"><div><div class="lc-name">بطاقتك في منزال</div><div class="lc-member">MZ-0000000</div></div><span class="lc-tier"><i style="background:#c8963e"></i>ذهبي</span></div>
+      <div class="lc-points"><span class="value num">2,450</span><span class="label">نقطة</span></div>
+      <div class="lc-meta"><div><b class="num">4</b>إقامات</div><div><b class="num">2</b>مكافآت</div></div>
+    </div>
+  </div>
+</section>
+<main class="g-main" style="padding-bottom:3rem">
+  <h2 class="center mt-3">كيف يعمل البرنامج؟</h2>
+  <div class="steps mt-2">
+    <div class="step"><h3>أقم في منزال</h3><p class="muted mb-0">بعد انتهاء إقامتك وتأكيدها، تُضاف النقاط إلى حسابك تلقائيًا<% if (program) { %> — <b class="num"><%= fmt.num(program.points_per_currency) %></b> نقطة لكل <%= fmt.money(1).split(' ').slice(1).join(' ') %><%= program.points_per_stay ? ` + ${program.points_per_stay} نقطة لكل إقامة` : '' %><% } %>.</p></div>
+    <div class="step"><h3>اجمع الأختام والنقاط</h3><p class="muted mb-0"><% if (program && program.stamp_goal) { %>كل <b class="num"><%= program.stamp_goal %></b> إقامات مكتملة = مكافأة خاصة على حجزك التالي.<% } else { %>كلما زادت إقاماتك ارتقى مستواك وزادت نقاطك.<% } %></p></div>
+    <div class="step"><h3>استبدل وعد للحجز</h3><p class="muted mb-0">استبدل نقاطك بخصم أو ترقية، وطبّقها مباشرة عند إعادة الحجز من حسابك.</p></div>
+  </div>
+  <% if (rewards.length) { %>
+  <h2 class="center mt-3">مكافآت بانتظارك</h2>
+  <div class="grid grid-4 mt-2">
+    <% rewards.forEach((r) => { %><div class="reward-tile"><div class="r-icon"><%- include('../partials/icon', { name: r.reward_type === 'late_checkout' ? 'clock' : r.reward_type === 'free_upgrade' ? 'up' : 'percent' }) %></div><b><%= r.name %></b><span class="cost num"><%= fmt.num(r.points_cost) %> نقطة</span></div><% }) %>
+  </div>
+  <% } %>
+  <% if (tiers.length) { %>
+  <h2 class="center mt-3">مستويات الولاء</h2>
+  <div class="grid grid-3 mt-2">
+    <% tiers.forEach((t) => { %><div class="card"><div class="row"><span class="badge" style="background:<%= t.color %>;color:#fff"><%= t.name %></span></div><p class="small muted mt-1 mb-0"><%= t.min_stays ? `من ${t.min_stays} إقامات` : 'عند الانضمام' %><%= t.min_points ? ` و ${fmt.num(t.min_points)} نقطة` : '' %></p><p class="mb-0 mt-1"><%= t.perks %></p></div><% }) %>
+  </div>
+  <% } %>
+  <div class="card center mt-3"><h2>حجزت معنا من قبل بدون حساب؟</h2><p class="muted">أنشئ حسابك بنفس البريد أو الجوال الذي حجزت به، وبعد تأكيده سنربط إقاماتك السابقة ونحسب نقاطها.</p><a href="/signup" class="btn btn-primary">انضم الآن</a></div>
+</main>
+<%- include('../partials/g-foot') %>

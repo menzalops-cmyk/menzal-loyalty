@@ -1,0 +1,24 @@
+<%- include('../partials/a-head') %>
+<a href="/admin/bookings" class="small">→ الحجوزات</a>
+<div class="a-top mt-1"><h1>تسجيل حجز أو إقامة</h1></div>
+<div class="alert alert-info small">استخدم هذا النموذج للحجوزات الهاتفية أو المباشرة، أو لتسجيل إقامات سابقة. إذا كان للضيف حساب موثق بنفس البريد/الجوال سيُربط فورًا، وإلا سيُربط تلقائيًا عند إنشائه حسابًا وتأكيد بياناته. اختيار «مكتملة» يمنح النقاط فورًا (يتطلب أن يكون تاريخ المغادرة قد مضى).</div>
+<form class="card" method="post" action="/admin/bookings" style="max-width:760px">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <fieldset><legend>الضيف</legend><div class="form-grid">
+    <div class="field"><label>الاسم</label><input name="contact_name" required></div>
+    <div class="field"><label>البريد الإلكتروني</label><input type="email" name="contact_email" dir="ltr"></div>
+    <div class="field"><label>الجوال</label><input type="tel" name="contact_phone" dir="ltr" placeholder="05XXXXXXXX"></div>
+  </div></fieldset>
+  <fieldset><legend>الإقامة</legend><div class="form-grid">
+    <div class="field"><label>الوحدة</label><select name="unit_id" required><% units.forEach((u) => { %><option value="<%= u.id %>"><%= u.name %> — <%= u.city %> (<%= fmt.money(u.nightly_price) %>)</option><% }) %></select></div>
+    <div class="field"><label>الوصول</label><input type="date" name="check_in" required></div>
+    <div class="field"><label>المغادرة</label><input type="date" name="check_out" required></div>
+    <div class="field"><label>عدد الضيوف</label><input type="number" name="guests_count" value="2" min="1"></div>
+    <div class="field"><label>المبلغ المدفوع</label><input type="number" step="0.01" name="total" placeholder="تلقائي: الليالي × السعر"></div>
+    <div class="field"><label>الحالة</label><select name="status"><option value="pending">بانتظار التأكيد</option><option value="confirmed">مؤكد</option><option value="checked_in">مقيم حاليًا</option><option value="completed">مكتملة (منح النقاط)</option></select></div>
+    <div class="field"><label>مرجع خارجي <span class="muted">(اختياري)</span></label><input name="external_ref" dir="ltr"></div>
+  </div>
+  <div class="field"><label>ملاحظات</label><textarea name="notes" style="min-height:70px"></textarea></div></fieldset>
+  <button class="btn btn-primary">حفظ الحجز</button>
+</form>
+<%- include('../partials/a-foot') %>

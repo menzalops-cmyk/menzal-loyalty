@@ -1,0 +1,17 @@
+<% const isPct = v.reward_type === 'percent_discount', isFix = v.reward_type === 'fixed_discount'; %>
+<div class="voucher <%= v.status !== 'available' ? 'dim' : '' %>">
+  <div class="v-side">
+    <% if (isPct) { %><span class="num"><%= fmt.num(v.value) %>%</span><small>خصم</small>
+    <% } else if (isFix) { %><span class="num"><%= fmt.num(v.value) %></span><small>خصم <%= fmt.money(0).split(' ').slice(1).join(' ') %></small>
+    <% } else { %><%- include('icon', { name: v.reward_type === 'late_checkout' ? 'clock' : 'up' }) %><small><%= v.reward_type === 'late_checkout' ? 'خروج متأخر' : 'ترقية' %></small><% } %>
+  </div>
+  <div class="v-body">
+    <div class="row between"><b><%= v.name %></b><span class="badge badge-<%= v.status %>"><%= L.voucher[v.status] %></span></div>
+    <div class="small muted mt-1">
+      <span class="code"><%= v.code %></span>
+      <% if (v.status === 'available' && v.expires_at) { %> · صالحة حتى <%= fmt.date(v.expires_at) %><% } %>
+      <% if (v.min_booking_amount > 0) { %> · حد أدنى <%= fmt.money(v.min_booking_amount) %><% } %>
+    </div>
+    <% if (!['percent_discount','fixed_discount'].includes(v.reward_type)) { %><div class="tiny muted">تُنفذ عند التوفر وقت الإقامة</div><% } %>
+  </div>
+</div>

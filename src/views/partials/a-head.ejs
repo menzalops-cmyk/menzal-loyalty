@@ -1,0 +1,34 @@
+<%- include('doc-head') %>
+<body style="background:var(--sand-100)">
+<div class="a-mobilebar"><%- include('logo', { light: true, href: '/admin', sub: 'لوحة الإدارة' }) %><button type="button" data-toggle="#aside" aria-label="القائمة"><%- include('icon', { name: 'menu' }) %></button></div>
+<div class="a-shell">
+<aside class="a-side" id="aside">
+  <%- include('logo', { light: true, href: '/admin', sub: 'إدارة برنامج الولاء' }) %>
+  <% const nav = (href, icon, label, perm) => (!perm || can(perm)) ? `<a href="${href}" class="${(href === '/admin' ? path === '/admin' || path === '/admin/' : path.startsWith(href)) ? 'active' : ''}">${include('icon', { name: icon })}${label}</a>` : ''; %>
+  <nav>
+    <%- nav('/admin', 'chart', 'لوحة المؤشرات', 'dashboard.view') %>
+    <div class="grp">العمليات</div>
+    <%- nav('/admin/guests', 'users', 'الضيوف', 'guests.view') %>
+    <%- nav('/admin/bookings', 'calendar', 'الحجوزات', 'bookings.view') %>
+    <%- nav('/admin/units', 'building', 'الوحدات', 'units.manage') %>
+    <div class="grp">برنامج الولاء</div>
+    <%- nav('/admin/loyalty', 'star', 'القواعد والمستويات', 'loyalty.manage') %>
+    <%- nav('/admin/rewards', 'gift', 'المكافآت والعروض', 'rewards.manage') %>
+    <%- nav('/admin/referrals', 'share', 'الإحالات', 'referrals.view') %>
+    <div class="grp">التسويق</div>
+    <%- nav('/admin/campaigns', 'megaphone', 'الحملات', 'campaigns.manage') %>
+    <%- nav('/admin/messages', 'mail', 'الرسائل والأتمتة', 'templates.manage') %>
+    <%- nav('/admin/notifications', 'list', 'سجل الرسائل', 'notifications.view') %>
+    <div class="grp">النظام</div>
+    <%- nav('/admin/integrations', 'plug', 'التكاملات', 'dashboard.view') %>
+    <%- nav('/admin/staff', 'shield', 'فريق العمل', 'staff.manage') %>
+    <%- nav('/admin/audit', 'list', 'سجل التدقيق', 'audit.view') %>
+  </nav>
+  <div class="me">
+    <div><b style="color:#fff"><%= staff.name %></b></div>
+    <div class="tiny" style="color:rgba(255,255,255,.6)"><%= L.role[staff.role] %></div>
+    <form method="post" action="/admin/logout" class="mt-1"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike small" style="color:rgba(255,255,255,.8)">تسجيل الخروج</button></form>
+  </div>
+</aside>
+<main class="a-main">
+<%- include('flash') %>

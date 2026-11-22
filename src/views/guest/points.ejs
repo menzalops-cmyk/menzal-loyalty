@@ -1,0 +1,20 @@
+<%- include('../partials/g-head') %>
+<div class="page-head row between"><div><h1>سجل النقاط</h1><p class="muted mb-0">كل عملية إضافة أو خصم موثقة هنا.</p></div><div class="card flat center" style="padding:.6rem 1.2rem"><div class="small muted">رصيدك</div><b class="num" style="font-size:1.5rem;color:var(--teal-800)"><%= fmt.num(s.guest.points_balance) %></b></div></div>
+<% if (s.expiring && s.expiring.pts > 0) { %><div class="alert alert-warn"><b class="num"><%= fmt.num(s.expiring.pts) %></b> نقطة تنتهي في <%= fmt.date(s.expiring.first_at) %></div><% } %>
+<% if (!ledger.length) { %>
+  <div class="card empty"><span class="icon">⭐</span>لا توجد عمليات بعد. ستظهر نقاطك هنا بعد أول إقامة مكتملة.</div>
+<% } else { %>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>التاريخ</th><th>العملية</th><th>التفاصيل</th><th>النقاط</th><th class="hide-sm">الرصيد</th></tr></thead>
+  <tbody><% ledger.forEach((l) => { %>
+    <tr>
+      <td class="nowrap small"><%= fmt.date(l.created_at) %></td>
+      <td><span class="badge"><%= L.ledger[l.entry_type] %></span></td>
+      <td class="small"><%= l.reason %><% if (l.expires_at && l.remaining > 0) { %><div class="tiny muted">تنتهي <%= fmt.date(l.expires_at) %></div><% } %></td>
+      <td class="num <%= l.points > 0 ? 'pos' : 'neg' %>"><%= l.points > 0 ? '+' : '' %><%= fmt.num(l.points) %></td>
+      <td class="num hide-sm"><%= fmt.num(l.balance_after) %></td>
+    </tr>
+  <% }) %></tbody>
+</table></div></div>
+<% } %>
+<%- include('../partials/g-foot') %>

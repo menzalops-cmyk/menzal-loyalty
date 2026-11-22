@@ -1,0 +1,11 @@
+<%- include('../partials/g-head') %>
+<div class="auth-wrap"><div class="card center">
+  <% if (referrer) { %>
+    <h1><%= referrer.first %> يدعوك إلى منزال</h1>
+    <p class="muted">انضم إلى نادي ضيوف منزال، واحصل على هدية بعد إكمال أول إقامة لك.</p>
+    <a href="/signup?ref=<%= code %>" class="btn btn-gold btn-block">أنشئ حسابك واقبل الدعوة</a>
+  <% } else { %>
+    <h1>رابط الدعوة غير صالح</h1><p class="muted">يمكنك الانضمام مباشرة.</p><a href="/signup" class="btn btn-primary">انضم الآن</a>
+  <% } %>
+</div></div>
+<%- include('../partials/g-foot') %>

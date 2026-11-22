@@ -1,0 +1,92 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>برنامج الولاء</h1>
+  <div class="tabs mb-0"><% programs.forEach((p) => { %><a href="/admin/loyalty?program=<%= p.id %>" class="<%= program && p.id === program.id ? 'active' : '' %>"><%= p.name %><%= p.active ? ' ●' : '' %></a><% }) %><a href="/admin/loyalty?program=new">+ برنامج جديد</a></div>
+</div>
+<% const p = (locals.program && String(locals.program.id) !== 'new' && !(String(locals.programs.find(x => x.id === program?.id)?.id) === undefined)) ? program : {}; const isNew = !program || (typeof program === 'object' && false); %>
+<% const prog = (new URLSearchParams(locals.path.split('?')[1] || '')).get('program') === 'new' ? {} : (program || {}); %>
+<div class="grid grid-2" style="align-items:start">
+  <form class="card" method="post" action="/admin/loyalty/program">
+    <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= prog.id || '' %>">
+    <div class="row between"><h3 class="mb-0">قواعد اكتساب النقاط</h3><% if (prog.id) { %><span class="badge <%= prog.active ? 'badge-green' : 'badge-red' %>"><%= prog.active ? 'نشط' : 'متوقف' %></span><% } %></div>
+    <div class="field mt-2"><label>اسم البرنامج</label><input name="name" value="<%= prog.name || '' %>" required></div>
+    <div class="form-grid">
+      <div class="field"><label>نقاط لكل 1 <%= settings.currency_symbol %> مدفوع</label><input type="number" step="0.0001" min="0" name="points_per_currency" value="<%= prog.points_per_currency ?? 1 %>"></div>
+      <div class="field"><label>نقاط ثابتة لكل إقامة</label><input type="number" min="0" name="points_per_stay" value="<%= prog.points_per_stay ?? 0 %>"></div>
+      <div class="field"><label>نقاط لكل ليلة</label><input type="number" min="0" name="points_per_night" value="<%= prog.points_per_night ?? 0 %>"></div>
+      <div class="field"><label>قيمة النقطة التقديرية</label><input type="number" step="0.0001" min="0" name="point_value" value="<%= prog.point_value ?? 0.05 %>"><div class="hint">لحساب التزام النقاط في التقارير</div></div>
+      <div class="field"><label>صلاحية النقاط (أشهر)</label><input type="number" min="1" name="points_expiry_months" value="<%= prog.points_expiry_months ?? '' %>" placeholder="فارغ = لا تنتهي"></div>
+      <div class="field"><label>مدة ربط الحجوزات السابقة (أيام)</label><input type="number" min="0" name="claim_window_days" value="<%= prog.claim_window_days ?? 365 %>"><div class="hint">الإقامات الأقدم تُربط دون نقاط</div></div>
+    </div>
+    <fieldset><legend>نموذج الأختام</legend><div class="form-grid">
+      <div class="field"><label>عدد الإقامات للمكافأة</label><input type="number" min="0" name="stamp_goal" value="<%= prog.stamp_goal ?? 0 %>"><div class="hint">0 = معطل</div></div>
+      <div class="field"><label>مكافأة اكتمال البطاقة</label><select name="stamp_reward_id"><option value="">—</option><% rewards.forEach((r) => { %><option value="<%= r.id %>" <%= r.id === prog.stamp_reward_id ? 'selected' : '' %>><%= r.name %></option><% }) %></select></div>
+    </div></fieldset>
+    <p class="hint">النقاط = (المبلغ المدفوع بعد الخصم × نقاط لكل وحدة عملة + نقاط الإقامة + نقاط الليالي) × مضاعف المستوى × مضاعفات القواعد الموسمية + نقاط إضافية.</p>
+    <button class="btn btn-primary">حفظ القواعد</button>
+  </form>
+  <div class="stack">
+    <% if (prog.id) { %>
+    <form class="card row between" method="post" action="/admin/loyalty/program/<%= prog.id %>/toggle">
+      <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="active" value="<%= prog.active ? 'false' : 'true' %>">
+      <div><b><%= prog.active ? 'البرنامج مفعل' : 'البرنامج متوقف' %></b><div class="small muted"><%= prog.active ? 'تُمنح النقاط تلقائيًا عند اكتمال الإقامات' : 'تفعيله يوقف أي برنامج آخر نشط' %></div></div>
+      <button class="btn btn-sm <%= prog.active ? 'btn-danger' : 'btn-gold' %>" data-confirm="<%= prog.active ? 'إيقاف البرنامج؟ لن تُمنح نقاط جديدة.' : 'تفعيل هذا البرنامج؟' %>"><%= prog.active ? 'إيقاف' : 'تفعيل' %></button>
+    </form>
+    <div class="card">
+      <h3>مستويات الولاء</h3>
+      <% tiers.forEach((t) => { %>
+      <details class="box" style="box-shadow:none;border:1px solid var(--line)"><summary><span><span class="badge" style="background:<%= t.color %>;color:#fff"><%= t.name %></span> <span class="small muted">× <%= t.earn_multiplier %> · <span class="num"><%= t.members %></span> عضو</span></span><span class="small">تعديل</span></summary>
+        <form method="post" action="/admin/loyalty/tiers"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= t.id %>"><input type="hidden" name="program_id" value="<%= prog.id %>">
+          <div class="form-grid"><div class="field"><label>الاسم</label><input name="name" value="<%= t.name %>"></div><div class="field"><label>الترتيب</label><input type="number" name="sort_order" value="<%= t.sort_order %>"></div>
+          <div class="field"><label>حد الإقامات</label><input type="number" name="min_stays" value="<%= t.min_stays %>"></div><div class="field"><label>حد النقاط (مدى الحياة)</label><input type="number" name="min_points" value="<%= t.min_points %>"></div>
+          <div class="field"><label>مضاعف النقاط</label><input type="number" step="0.01" name="earn_multiplier" value="<%= t.earn_multiplier %>"></div><div class="field"><label>اللون</label><input type="color" name="color" value="<%= t.color %>" style="padding:.2rem"></div></div>
+          <div class="field"><label>المزايا</label><input name="perks" value="<%= t.perks || '' %>"></div>
+          <div class="row"><button class="btn btn-primary btn-sm">حفظ</button><button class="btn btn-danger btn-sm" name="_action" value="delete" data-confirm="حذف المستوى؟">حذف</button></div>
+        </form></details>
+      <% }) %>
+      <details class="box" style="box-shadow:none;border:1px dashed var(--line)"><summary>+ إضافة مستوى</summary>
+        <form method="post" action="/admin/loyalty/tiers"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="program_id" value="<%= prog.id %>">
+          <div class="form-grid"><div class="field"><label>الاسم</label><input name="name" required></div><div class="field"><label>الترتيب</label><input type="number" name="sort_order" value="<%= tiers.length + 1 %>"></div>
+          <div class="field"><label>حد الإقامات</label><input type="number" name="min_stays" value="0"></div><div class="field"><label>حد النقاط</label><input type="number" name="min_points" value="0"></div>
+          <div class="field"><label>مضاعف النقاط</label><input type="number" step="0.01" name="earn_multiplier" value="1"></div><div class="field"><label>اللون</label><input type="color" name="color" value="#0f4c4f" style="padding:.2rem"></div></div>
+          <div class="field"><label>المزايا</label><input name="perks"></div><button class="btn btn-primary btn-sm">إضافة</button>
+        </form></details>
+    </div>
+    <% } %>
+  </div>
+</div>
+<% if (prog.id) { %>
+<div class="section-title"><h2>قواعد إضافية (مواسم وإجازات ووحدات)</h2></div>
+<div class="grid grid-2" style="align-items:start">
+  <div class="card" style="padding:0"><div class="table-wrap"><table>
+    <thead><tr><th>القاعدة</th><th>القيمة</th><th>الفترة</th><th>الحالة</th></tr></thead>
+    <tbody><% if (!rules.length) { %><tr><td colspan="4" class="empty">لا توجد قواعد إضافية</td></tr><% } %>
+    <% rules.forEach((r) => { %><tr><td><b><%= r.name %></b><div class="tiny muted"><%= r.unit_ids ? `${r.unit_ids.length} وحدات` : 'كل الوحدات' %></div></td><td class="num"><%= r.rule_type === 'multiplier' ? `× ${r.value}` : `+${r.value} نقطة` %></td><td class="small"><%= r.valid_from ? fmt.date(r.valid_from) : '…' %> ← <%= r.valid_until ? fmt.date(r.valid_until) : '…' %></td>
+      <td><form method="post" action="/admin/loyalty/rules"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= r.id %>"><input type="hidden" name="program_id" value="<%= prog.id %>"><button class="badge <%= r.active ? 'badge-green' : '' %>" name="_action" value="toggle" style="border:0;cursor:pointer"><%= r.active ? 'مفعلة' : 'متوقفة' %></button></form></td></tr><% }) %></tbody>
+  </table></div></div>
+  <form class="card" method="post" action="/admin/loyalty/rules">
+    <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="program_id" value="<%= prog.id %>">
+    <h3>قاعدة جديدة</h3>
+    <div class="field"><label>الاسم</label><input name="name" placeholder="مثال: نقاط مضاعفة في الإجازة الصيفية" required></div>
+    <div class="form-grid">
+      <div class="field"><label>النوع</label><select name="rule_type"><option value="multiplier">مضاعف النقاط</option><option value="bonus_points">نقاط إضافية ثابتة</option></select></div>
+      <div class="field"><label>القيمة</label><input type="number" step="0.01" name="value" required placeholder="2 أو 200"></div>
+      <div class="field"><label>من (تاريخ الوصول)</label><input type="date" name="valid_from"></div>
+      <div class="field"><label>إلى</label><input type="date" name="valid_until"></div>
+    </div>
+    <div class="field"><label>الوحدات المشمولة <span class="muted">(فارغ = الكل)</span></label><select name="unit_ids" multiple><% units.forEach((u) => { %><option value="<%= u.id %>"><%= u.name %></option><% }) %></select></div>
+    <button class="btn btn-primary btn-sm">إضافة القاعدة</button>
+  </form>
+</div>
+<% } %>
+<details class="box mt-3"><summary>إعدادات عامة</summary>
+  <form method="post" action="/admin/settings"><input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="form-grid">
+      <div class="field"><label>رمز العملة</label><input name="currency_symbol" value="<%= settings.currency_symbol %>"></div>
+      <div class="field"><label>كود العملة</label><input name="currency_code" value="<%= settings.currency_code %>" dir="ltr"></div>
+      <div class="field"><label>حد تعديل النقاط لخدمة الضيوف</label><input type="number" name="support_adjust_limit" value="<%= settings.support_adjust_limit %>"></div>
+      <div class="field"><label>مدة إسناد الحملات (أيام)</label><input type="number" name="campaign_attribution_days" value="<%= settings.campaign_attribution_days %>"></div>
+    </div>
+    <button class="btn btn-primary btn-sm">حفظ الإعدادات</button>
+  </form>
+</details>
+<%- include('../partials/a-foot') %>

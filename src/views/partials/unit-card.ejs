@@ -1,0 +1,12 @@
+<div class="unit-card">
+  <div class="ph">
+    <% if (u.image_url) { %><img src="<%= u.image_url %>" alt="<%= u.name %>" loading="lazy"><% } else { %><%- include('icon', { name: 'building' }) %><% } %>
+    <% if (locals.tag) { %><span class="tag"><%= tag %></span><% } %>
+  </div>
+  <div class="body">
+    <b><%= u.name %></b>
+    <span class="small muted"><%- include('icon', { name: 'pin', cls: 'small' }) %> <%= u.city %><%= u.district ? ` — ${u.district}` : '' %> · <%= u.unit_type %> · <%= u.capacity %> أشخاص</span>
+    <span class="price"><span class="num"><%= fmt.money(u.nightly_price) %></span> <span class="small muted">/ الليلة</span></span>
+    <div class="actions"><a class="btn <%= locals.primary ? 'btn-gold' : 'btn-ghost' %> btn-sm btn-block" href="<%= locals.guest ? `/account/book/${u.id}` : `/login?next=/account/book/${u.id}` %>"><%= locals.cta || 'احجز' %></a></div>
+  </div>
+</div>

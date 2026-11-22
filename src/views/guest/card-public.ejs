@@ -1,0 +1,6 @@
+<%- include('../partials/g-head', { noTabbar: true }) %>
+<div style="max-width:420px;margin:2rem auto" class="stack">
+  <%- include('../partials/loyalty-card', { s, publicName: firstName, hidePoints: true }) %>
+  <div class="card center"><p class="mb-1">عضو في نادي ضيوف منزال منذ <%= fmt.date(s.guest.created_at) %></p><a href="/signup" class="btn btn-primary">انضم أنت أيضًا</a></div>
+</div>
+<%- include('../partials/g-foot') %>

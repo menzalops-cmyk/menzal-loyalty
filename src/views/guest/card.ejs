@@ -1,0 +1,16 @@
+<%- include('../partials/g-head') %>
+<div class="page-head"><h1>بطاقة الولاء</h1><p class="muted mb-0">اعرضها عند تسجيل الوصول، أو شاركها.</p></div>
+<div style="max-width:460px">
+  <%- include('../partials/loyalty-card', { s }) %>
+  <div class="mt-2"><%- include('../partials/stamps', { s }) %></div>
+  <div class="card mt-2">
+    <h3>مشاركة البطاقة</h3>
+    <p class="small muted">الرابط يعرض اسمك الأول ومستواك وعدد إقاماتك فقط — دون أي بيانات تواصل أو رصيد.</p>
+    <div class="share-box"><input id="cardlink" readonly value="<%= shareUrl %>"><button class="btn btn-ghost btn-sm" type="button" data-copy="#cardlink">نسخ</button></div>
+    <div class="row mt-2">
+      <a class="btn btn-ghost btn-sm" href="<%= shareUrl %>" data-share="<%= shareUrl %>" data-text="بطاقتي في منزال">مشاركة</a>
+      <span class="btn btn-ghost btn-sm" aria-disabled="true" title="قريبًا" style="opacity:.55;cursor:default">إضافة إلى المحفظة — قريبًا</span>
+    </div>
+  </div>
+</div>
+<%- include('../partials/g-foot') %>

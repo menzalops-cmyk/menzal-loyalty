@@ -1,0 +1,32 @@
+<%- include('../partials/g-head') %>
+<a href="/account/bookings" class="small">→ حجوزاتي</a>
+<div class="page-head row between mt-1"><div><h1><%= b.unit_name %></h1><p class="muted mb-0">رقم الحجز <b dir="ltr"><%= b.booking_ref %></b></p></div><span class="badge badge-<%= b.status %>"><%= L.booking[b.status] %></span></div>
+<div class="grid grid-2" style="align-items:start">
+  <div class="card">
+    <dl class="dl">
+      <dt>الموقع</dt><dd><%= b.city %><%= b.district ? ` — ${b.district}` : '' %></dd>
+      <dt>الوصول</dt><dd><%= fmt.date(b.check_in) %></dd>
+      <dt>المغادرة</dt><dd><%= fmt.date(b.check_out) %></dd>
+      <dt>الليالي</dt><dd class="num"><%= b.nights %></dd>
+      <dt>الضيوف</dt><dd class="num"><%= b.guests_count %></dd>
+      <% if (b.perks.length) { %><dt>مزايا</dt><dd><%= b.perks.map((p) => L.rewardType[p]).join('، ') %> (عند التوفر)</dd><% } %>
+    </dl>
+    <div class="mt-2">
+      <div class="summary-line"><span>قيمة الإقامة</span><span class="num"><%= fmt.money(b.subtotal_amount) %></span></div>
+      <% if (b.discount_amount > 0) { %><div class="summary-line discount"><span>خصم <%= b.voucher_name || 'المكافأة' %></span><span class="num">−<%= fmt.money(b.discount_amount) %></span></div><% } %>
+      <% if (b.refunded_amount > 0) { %><div class="summary-line"><span>مسترد</span><span class="num">−<%= fmt.money(b.refunded_amount) %></span></div><% } %>
+      <div class="summary-line total"><span>الإجمالي</span><span class="num"><%= fmt.money(b.total_amount) %></span></div>
+    </div>
+    <% if (b.status === 'pending') { %><div class="alert alert-info mt-2 mb-0 small">طلبك قيد المراجعة، سيتواصل معك فريق منزال لتأكيده وإتمام الدفع.</div><% } %>
+  </div>
+  <div class="card">
+    <h3>نقاط هذه الإقامة</h3>
+    <% if (!ledger.length) { %>
+      <p class="muted mb-0"><%= ['pending','confirmed','checked_in'].includes(b.status) ? 'ستُضاف النقاط تلقائيًا بعد انتهاء الإقامة وتأكيد اكتمالها.' : 'لا توجد نقاط لهذا الحجز.' %></p>
+    <% } else { ledger.forEach((l) => { %>
+      <div class="summary-line"><span class="small"><%= L.ledger[l.entry_type] %> — <%= fmt.date(l.created_at) %></span><span class="num <%= l.points > 0 ? 'pos' : 'neg' %>"><%= l.points > 0 ? '+' : '' %><%= fmt.num(l.points) %></span></div>
+    <% }) } %>
+    <% if (['completed','cancelled'].includes(b.status)) { %><a href="/account/book/<%= b.unit_id %>" class="btn btn-gold btn-block mt-2">أعد حجز نفس الوحدة</a><% } %>
+  </div>
+</div>
+<%- include('../partials/g-foot') %>

@@ -1,0 +1,9 @@
+<a href="<%= locals.href || '/' %>" class="logo <%= locals.light ? 'light' : '' %>" aria-label="منزال">
+  <svg viewBox="0 0 40 40" aria-hidden="true">
+    <rect width="40" height="40" rx="11" fill="<%= locals.light ? '#ffffff' : '#0f4c4f' %>"/>
+    <path d="M10 30V18.5L20 10l10 8.5V30" fill="none" stroke="<%= locals.light ? '#0f4c4f' : '#ffffff' %>" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M16.5 30v-6.5a3.5 3.5 0 0 1 7 0V30" fill="none" stroke="#c8963e" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="20" cy="18" r="1.8" fill="#c8963e"/>
+  </svg>
+  <span>منزال<% if (locals.sub) { %><small><%= sub %></small><% } %></span>
+</a>

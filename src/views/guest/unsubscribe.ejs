@@ -1,0 +1,10 @@
+<%- include('../partials/g-head') %>
+<div class="auth-wrap"><div class="card center">
+  <% if (done) { %>
+    <h1>تم إلغاء الاشتراك</h1><p class="muted">لن تصلك عروض تسويقية منا عبر البريد أو واتساب. ستبقى إشعارات حسابك (مثل النقاط والحجوزات) فقط.</p><a href="/login" class="btn btn-ghost">إدارة التفضيلات</a>
+  <% } else { %>
+    <h1>إلغاء الاشتراك في العروض</h1><p class="muted">هل تريد إيقاف جميع الرسائل التسويقية من منزال؟</p>
+    <form method="post" action="/unsubscribe/<%= token %>"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn-primary btn-block">نعم، ألغِ الاشتراك</button></form>
+  <% } %>
+</div></div>
+<%- include('../partials/g-foot') %>

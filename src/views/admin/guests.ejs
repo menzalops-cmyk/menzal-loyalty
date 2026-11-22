@@ -1,0 +1,30 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>الضيوف</h1></div>
+<form class="card row mb-2" method="get" action="/admin/guests" style="gap:.5rem">
+  <input type="search" name="q" value="<%= q || '' %>" placeholder="بحث بالاسم أو البريد أو الجوال أو رقم العضوية" style="flex:1;min-width:220px">
+  <select name="sort" style="width:auto"><option value="">الأحدث</option><option value="spend" <%= sort === 'spend' ? 'selected' : '' %>>الأعلى إنفاقًا</option><option value="points" <%= sort === 'points' ? 'selected' : '' %>>الأعلى نقاطًا</option><option value="last" <%= sort === 'last' ? 'selected' : '' %>>آخر إقامة</option></select>
+  <% if (seg) { %><input type="hidden" name="segment" value="<%= seg %>"><% } %>
+  <button class="btn btn-primary">بحث</button>
+</form>
+<div class="tabs">
+  <a href="/admin/guests?q=<%= encodeURIComponent(q || '') %>" class="<%= !seg ? 'active' : '' %>">الكل</a>
+  <% Object.entries(SEGMENT_LABELS).forEach(([k, label]) => { const c = counts.find((x) => x.segment === k); %><a href="/admin/guests?segment=<%= k %>&q=<%= encodeURIComponent(q || '') %>" class="<%= seg === k ? 'active' : '' %>"><%= label %> <span class="num">(<%= c ? c.c : 0 %>)</span></a><% }) %>
+</div>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>الضيف</th><th>التصنيف</th><th>المستوى</th><th>الإقامات</th><th>آخر إقامة</th><th>الإنفاق</th><th>النقاط</th></tr></thead>
+  <tbody>
+  <% if (!rows.length) { %><tr><td colspan="7" class="empty">لا توجد نتائج</td></tr><% } %>
+  <% rows.forEach((g) => { %>
+    <tr>
+      <td><a href="/admin/guests/<%= g.id %>"><b><%= g.full_name %></b></a><div class="tiny muted" dir="ltr" style="text-align:right"><%= g.member_no %><%= can('guests.contact') ? ` · ${g.email || g.phone || ''}` : '' %></div></td>
+      <td><span class="badge <%= g.segment === 'vip' ? 'badge-gold' : g.segment === 'dormant' ? 'badge-red' : g.segment === 'repeat' ? 'badge-green' : '' %>"><%= SEGMENT_LABELS[g.segment] %></span></td>
+      <td><%= g.tier_name || '—' %></td>
+      <td class="num"><%= g.completed_stays %></td>
+      <td class="nowrap small"><%= fmt.date(g.last_stay) %></td>
+      <td class="num"><%= fmt.money(g.spend || 0) %></td>
+      <td class="num"><b><%= fmt.num(g.points_balance) %></b></td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table></div></div>
+<%- include('../partials/a-foot') %>

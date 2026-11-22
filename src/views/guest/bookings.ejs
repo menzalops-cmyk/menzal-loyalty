@@ -1,0 +1,17 @@
+<%- include('../partials/g-head') %>
+<div class="page-head row between"><div><h1>حجوزاتي</h1><p class="muted mb-0">إقاماتك السابقة والقادمة.</p></div><a href="/account/rebook" class="btn btn-gold">حجز جديد</a></div>
+<% if (!bookings.length) { %><div class="card empty"><span class="icon">🗓️</span>لا توجد حجوزات مرتبطة بحسابك بعد.<br><span class="small">حجزت سابقًا ببريد أو جوال مختلف؟ أضفه وأكّده من <a href="/account/preferences">التفضيلات</a>.</span></div><% } %>
+<div class="stack">
+<% bookings.forEach((b) => { %>
+  <div class="booking-item">
+    <div class="date-box"><b class="num"><%= b.check_in.slice(8) %></b><span><%= b.check_in.slice(0, 7) %></span></div>
+    <div class="info">
+      <a href="/account/bookings/<%= b.booking_ref %>"><b><%= b.unit_name %></b></a>
+      <div class="small muted"><%= b.city %> · <span class="num"><%= b.nights %></span> ليالٍ · <span class="num"><%= fmt.money(b.total_amount) %></span></div>
+      <div class="row small mt-1" style="gap:.4rem"><span class="badge badge-<%= b.status %>"><%= L.booking[b.status] %></span><% if (b.points_earned) { %><span class="badge badge-gold">+<span class="num"><%= fmt.num(b.points_earned) %></span> نقطة</span><% } %></div>
+    </div>
+    <% if (['completed','cancelled'].includes(b.status) && b.unit_active) { %><a href="/account/book/<%= b.unit_id %>" class="btn btn-ghost btn-sm nowrap"><%- include('../partials/icon', { name: 'refresh' }) %> أعد الحجز</a><% } %>
+  </div>
+<% }) %>
+</div>
+<%- include('../partials/g-foot') %>

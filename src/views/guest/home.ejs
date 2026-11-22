@@ -1,0 +1,54 @@
+<%- include('../partials/g-head') %>
+<div class="page-head"><h1>أهلًا <%= guest.full_name.split(' ')[0] %> 👋</h1><p class="muted mb-0">هذا ما لديك في منزال اليوم.</p></div>
+<div class="grid grid-2" style="align-items:start">
+  <div>
+    <a href="/account/card" style="text-decoration:none;display:block"><%- include('../partials/loyalty-card', { s }) %></a>
+    <div class="quick">
+      <a href="/account/points"><span class="qi"><%- include('../partials/icon', { name: 'star' }) %></span>نقاطي</a>
+      <a href="/account/rewards"><span class="qi gold"><%- include('../partials/icon', { name: 'gift' }) %></span>مكافآتي</a>
+      <a href="/account/rebook"><span class="qi"><%- include('../partials/icon', { name: 'key' }) %></span>احجز من جديد</a>
+    </div>
+  </div>
+  <div class="stack">
+    <% if (s.vouchers.length) { %>
+      <div class="card">
+        <div class="row between"><h3 class="mb-0">مكافآت جاهزة للاستخدام</h3><a href="/account/rewards" class="small">الكل</a></div>
+        <div class="stack mt-1"><% s.vouchers.slice(0, 2).forEach((v) => { %><%- include('../partials/voucher', { v }) %><% }) %></div>
+        <a href="/account/rebook" class="btn btn-gold btn-block mt-2">استخدمها في حجز جديد</a>
+      </div>
+    <% } else if (affordable) { %>
+      <div class="card"><h3>نقاطك تكفي لمكافأة 🎁</h3><p class="muted">لديك ما يكفي لاستبدال <b class="num"><%= affordable %></b> من المكافآت.</p><a href="/account/rewards" class="btn btn-gold btn-block">استبدل نقاطك</a></div>
+    <% } else if (s.nextReward) { %>
+      <div class="card">
+        <h3>المكافأة القادمة: <%= s.nextReward.name %></h3>
+        <p class="muted small mb-1">باقي <b class="num"><%= fmt.num(s.nextReward.points_cost - guest.points_balance) %></b> نقطة</p>
+        <div class="progress light"><span style="width:<%= Math.min(100, Math.round(100 * guest.points_balance / s.nextReward.points_cost)) %>%"></span></div>
+      </div>
+    <% } %>
+    <%- include('../partials/stamps', { s }) %>
+    <% if (s.expiring && s.expiring.pts > 0) { %><div class="alert alert-warn mb-0"><b class="num"><%= fmt.num(s.expiring.pts) %></b> نقطة تنتهي صلاحيتها في <%= fmt.date(s.expiring.first_at) %> — <a href="/account/rewards">استبدلها الآن</a></div><% } %>
+  </div>
+</div>
+
+<% if (upcoming.length) { %>
+  <div class="section-title"><h2>حجوزاتك القادمة</h2></div>
+  <div class="stack"><% upcoming.forEach((b) => { %>
+    <a class="booking-item" href="/account/bookings/<%= b.booking_ref %>" style="text-decoration:none;color:inherit">
+      <div class="date-box"><b class="num"><%= b.check_in.slice(8) %></b><span><%= fmt.date(b.check_in).split(' ').slice(1, 2).join(' ') %></span></div>
+      <div class="info"><b><%= b.unit_name %></b><div class="small muted"><%= b.city %> · <span class="num"><%= b.nights %></span> ليالٍ</div></div>
+      <span class="badge badge-<%= b.status %>"><%= L.booking[b.status] %></span>
+    </a>
+  <% }) %></div>
+<% } else if (lastStay) { %>
+  <div class="card mt-3 row between" style="background:var(--gold-100);box-shadow:none">
+    <div><b>اشتقت لـ <%= lastStay.unit_name %>؟</b><div class="small muted">آخر إقامة: <%= fmt.date(lastStay.check_out) %> · <%= lastStay.city %></div></div>
+    <a href="/account/book/<%= lastStay.unit_id %>" class="btn btn-primary">أعد الحجز</a>
+  </div>
+<% } else { %>
+  <div class="card mt-3 center"><h3>ابدأ أول إقامة لك</h3><p class="muted">ستُضاف النقاط تلقائيًا بعد انتهاء الإقامة.</p><a href="/account/rebook" class="btn btn-primary">تصفح الوحدات</a></div>
+<% } %>
+<div class="card mt-3 row between">
+  <div><b>ادعُ صديقًا واكسب معًا</b><div class="small muted">عندما يكمل صديقك أول إقامة يحصل كلاكما على مكافأة.</div></div>
+  <a href="/account/referrals" class="btn btn-ghost">رابط الدعوة</a>
+</div>
+<%- include('../partials/g-foot') %>

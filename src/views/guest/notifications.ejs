@@ -1,0 +1,13 @@
+<%- include('../partials/g-head') %>
+<div class="page-head"><h1>الإشعارات</h1></div>
+<% if (!list.length) { %><div class="card empty"><span class="icon">🔔</span>لا توجد إشعارات.</div><% } %>
+<div class="stack">
+<% list.forEach((n) => { %>
+  <div class="card" style="<%= n.read_at ? '' : 'border-inline-start:4px solid var(--gold-500)' %>">
+    <div class="row between"><b><%= n.subject %></b><span class="tiny muted"><%= fmt.dateTime(n.created_at) %></span></div>
+    <p class="small mb-0 mt-1" style="white-space:pre-line"><%= n.body %></p>
+    <% if (n.link) { %><a href="<%= n.link %>" class="small">عرض ←</a><% } %>
+  </div>
+<% }) %>
+</div>
+<%- include('../partials/g-foot') %>

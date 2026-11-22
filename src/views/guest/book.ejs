@@ -1,0 +1,40 @@
+<%- include('../partials/g-head') %>
+<a href="/account/rebook" class="small">→ رجوع</a>
+<div class="page-head mt-1"><h1><%= unit.name %></h1><p class="muted mb-0"><%= unit.city %><%= unit.district ? ` — ${unit.district}` : '' %> · <%= unit.unit_type %> · حتى <%= unit.capacity %> أشخاص · <span class="num"><%= fmt.money(unit.nightly_price) %></span> / الليلة</p></div>
+<div class="grid grid-2" style="align-items:start">
+  <form class="card" method="get" action="/account/book/<%= unit.id %>" data-autosubmit>
+    <h3>تفاصيل الإقامة</h3>
+    <div class="form-grid">
+      <div class="field"><label for="ci">الوصول</label><input id="ci" type="date" name="check_in" value="<%= form.check_in %>" min="<%= fmt.today() %>" required></div>
+      <div class="field"><label for="co">المغادرة</label><input id="co" type="date" name="check_out" value="<%= form.check_out %>" min="<%= fmt.today() %>" required></div>
+    </div>
+    <div class="field"><label for="gc">عدد الضيوف</label><select id="gc" name="guests"><% for (let i = 1; i <= unit.capacity; i++) { %><option value="<%= i %>" <%= String(i) === String(form.guests) ? 'selected' : '' %>><%= i %></option><% } %></select></div>
+    <h3 class="mt-2">طبّق مكافأة</h3>
+    <% if (!vouchers.length) { %><p class="small muted">لا توجد مكافآت متاحة. <a href="/account/rewards">استبدل نقاطك</a></p><% } %>
+    <label class="check"><input type="radio" name="voucher_id" value="" <%= !form.voucher_id ? 'checked' : '' %>>بدون مكافأة</label>
+    <% vouchers.forEach((v) => { %>
+      <label class="check" style="<%= v.usable ? '' : 'opacity:.55' %>"><input type="radio" name="voucher_id" value="<%= v.id %>" <%= String(v.id) === String(form.voucher_id) ? 'checked' : '' %> <%= v.usable ? '' : 'disabled' %>>
+        <span><b><%= v.name %></b> <span class="code small"><%= v.code %></span><br><span class="small muted"><%= v.usable ? (v.discount ? `توفر ${fmt.money(v.discount)}` : 'تُنفذ عند التوفر') : v.reason %></span></span></label>
+    <% }) %>
+    <noscript><button class="btn btn-ghost btn-block">احسب السعر</button></noscript>
+  </form>
+  <div class="card">
+    <h3>ملخص الحجز</h3>
+    <% if (quoteError) { %><div class="alert alert-error"><%= quoteError %></div><% } %>
+    <% if (!q) { %><p class="muted">اختر تاريخي الوصول والمغادرة لعرض السعر.</p><% } else { %>
+      <div class="summary-line"><span><span class="num"><%= q.nights %></span> ليالٍ × <span class="num"><%= fmt.money(unit.nightly_price) %></span></span><span class="num"><%= fmt.money(q.subtotal) %></span></div>
+      <% if (q.discount > 0) { %><div class="summary-line discount"><span>خصم المكافأة</span><span class="num">−<%= fmt.money(q.discount) %></span></div><% } %>
+      <% if (q.perk) { %><div class="summary-line discount"><span><%= L.rewardType[q.perk] %></span><span>عند التوفر</span></div><% } %>
+      <div class="summary-line total"><span>الإجمالي</span><span class="num"><%= fmt.money(q.total) %></span></div>
+      <form method="post" action="/account/book/<%= unit.id %>" class="mt-2">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <input type="hidden" name="check_in" value="<%= form.check_in %>"><input type="hidden" name="check_out" value="<%= form.check_out %>">
+        <input type="hidden" name="guests" value="<%= form.guests %>"><input type="hidden" name="voucher_id" value="<%= form.voucher_id %>">
+        <div class="field"><label for="notes">ملاحظات <span class="muted">(اختياري)</span></label><textarea id="notes" name="notes" style="min-height:70px" maxlength="500"></textarea></div>
+        <button class="btn btn-gold btn-block">أرسل طلب الحجز</button>
+        <p class="tiny muted mt-1 mb-0">سيتواصل معك فريق منزال لتأكيد الحجز وإتمام الدفع. ستُضاف النقاط بعد انتهاء الإقامة.</p>
+      </form>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/g-foot') %>

@@ -1,0 +1,59 @@
+<%- include('../partials/a-head') %>
+<a href="/admin/bookings" class="small">→ الحجوزات</a>
+<div class="a-top mt-1"><div><h1 dir="ltr" style="text-align:right"><%= b.booking_ref %></h1><p class="muted small mb-0"><%= b.unit_name %> · <%= b.source === 'external' ? `تكامل خارجي ${b.external_ref || ''}` : 'منزال' %></p></div><span class="badge badge-<%= b.status %>" style="font-size:.9rem"><%= L.booking[b.status] %></span></div>
+<div class="grid grid-2" style="align-items:start">
+  <div class="card">
+    <dl class="dl">
+      <dt>الضيف</dt><dd><%= b.contact_name %> <% if (b.guest_id) { %>· <a href="/admin/guests/<%= b.guest_id %>"><%= b.member_no %></a><% } else { %><span class="badge">غير مرتبط بحساب</span><% } %></dd>
+      <% if (can('guests.contact')) { %><dt>التواصل</dt><dd dir="ltr" style="text-align:right"><%= [b.contact_email, b.contact_phone].filter(Boolean).join(' · ') %></dd><% } %>
+      <dt>الإقامة</dt><dd><%= fmt.date(b.check_in) %> ← <%= fmt.date(b.check_out) %> (<span class="num"><%= b.nights %></span> ليالٍ، <span class="num"><%= b.guests_count %></span> ضيوف)</dd>
+      <dt>قبل الخصم</dt><dd class="num"><%= fmt.money(b.subtotal_amount) %></dd>
+      <dt>الخصم</dt><dd class="num"><%= fmt.money(b.discount_amount) %><%= voucher ? ` (${voucher.name} · ${voucher.code})` : '' %></dd>
+      <dt>الإجمالي</dt><dd class="num"><b><%= fmt.money(b.total_amount) %></b></dd>
+      <% if (b.refunded_amount > 0) { %><dt>مسترد</dt><dd class="num neg"><%= fmt.money(b.refunded_amount) %></dd><% } %>
+      <dt>متكرر</dt><dd><%= b.is_repeat ? 'نعم — ضيف عائد' : 'لا' %></dd>
+      <% if (b.perks.length) { %><dt>مزايا مطلوبة</dt><dd><%= b.perks.map((p) => L.rewardType[p]).join('، ') %></dd><% } %>
+      <% if (b.campaign_name) { %><dt>الحملة</dt><dd><%= b.campaign_name %></dd><% } %>
+      <% if (b.referral_code) { %><dt>إحالة</dt><dd dir="ltr" style="text-align:right"><%= b.referral_code %></dd><% } %>
+      <% if (b.notes) { %><dt>ملاحظات</dt><dd><%= b.notes %></dd><% } %>
+    </dl>
+  </div>
+  <div class="stack">
+    <% if (can('bookings.manage')) { %>
+    <div class="card">
+      <h3>تحديث الحالة</h3>
+      <% const actions = { pending: [['confirmed','تأكيد الحجز','btn-primary'],['cancelled','إلغاء','btn-danger']], confirmed: [['checked_in','تسجيل الوصول','btn-ghost'],['completed','تسجيل اكتمال الإقامة','btn-gold'],['cancelled','إلغاء','btn-danger']], checked_in: [['completed','تسجيل اكتمال الإقامة','btn-gold'],['cancelled','إلغاء','btn-danger']] }[b.status] || []; %>
+      <div class="row">
+      <% actions.forEach(([to, label, cls]) => { %>
+        <form method="post" action="/admin/bookings/<%= b.id %>/transition"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="to" value="<%= to %>">
+          <button class="btn btn-sm <%= cls %>" <%- to === 'cancelled' ? 'data-confirm="إلغاء الحجز؟ ستُعاد المكافأة المستخدمة للضيف."' : '' %>><%= label %></button></form>
+      <% }) %>
+      </div>
+      <% if (['confirmed','checked_in'].includes(b.status) && b.check_out > fmt.today()) { %><p class="hint mt-1">تسجيل الاكتمال متاح بعد تاريخ المغادرة (<%= fmt.date(b.check_out) %>).<%= staff.role === 'admin' ? ' كمدير يمكنك التجاوز:' : '' %></p>
+        <% if (staff.role === 'admin') { %><form method="post" action="/admin/bookings/<%= b.id %>/transition"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="to" value="completed"><input type="hidden" name="force" value="true"><button class="btn btn-ghost btn-sm" data-confirm="تجاوز التحقق من تاريخ المغادرة ومنح النقاط الآن؟">إكمال مبكر (مغادرة مبكرة)</button></form><% } %>
+      <% } %>
+      <% if (b.status === 'completed') { %>
+        <form method="post" action="/admin/bookings/<%= b.id %>/transition" class="mt-1">
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <div class="form-grid">
+            <div class="field"><label>نوع الاسترداد</label><select name="to"><option value="partial_refund">جزئي</option><option value="refunded">كامل</option></select></div>
+            <div class="field"><label>المبلغ (للجزئي)</label><input type="number" step="0.01" name="refund_amount"></div>
+          </div>
+          <div class="field"><label>السبب (إلزامي)</label><input name="note" required></div>
+          <p class="hint">ستُعكس النقاط بقيد تصحيحي موثق بنسبة المبلغ المسترد. الاسترداد الكامل يلغي ختم الإقامة.</p>
+          <button class="btn btn-danger btn-sm" data-confirm="تأكيد الاسترداد وعكس النقاط؟">تسجيل الاسترداد</button>
+        </form>
+      <% } %>
+      <% if (!actions.length && b.status !== 'completed') { %><p class="muted mb-0">لا توجد إجراءات متاحة لهذه الحالة.</p><% } %>
+    </div>
+    <% } %>
+    <div class="card"><h3>النقاط المرتبطة</h3>
+      <% if (!ledger.length) { %><p class="muted mb-0 small">لا توجد. تُمنح عند تسجيل اكتمال الإقامة لضيف لديه حساب.</p><% } %>
+      <% ledger.forEach((l) => { %><div class="summary-line small"><span><%= L.ledger[l.entry_type] %> · <%= l.reason %></span><span class="num <%= l.points > 0 ? 'pos' : 'neg' %>"><%= l.points > 0 ? '+' : '' %><%= fmt.num(l.points) %></span></div><% }) %>
+    </div>
+    <div class="card"><h3>سجل الحالات</h3>
+      <% history.forEach((h) => { %><div class="summary-line small"><span><%= h.from_status ? L.booking[h.from_status] + ' ← ' : '' %><b><%= L.booking[h.to_status] %></b><%= h.note ? ` · ${h.note}` : '' %></span><span class="muted tiny"><%= fmt.dateTime(h.created_at) %> · <%= h.actor %></span></div><% }) %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/a-foot') %>

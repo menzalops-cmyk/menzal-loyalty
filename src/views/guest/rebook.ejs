@@ -1,0 +1,16 @@
+<%- include('../partials/g-head') %>
+<div class="page-head"><h1>احجز من جديد</h1><p class="muted mb-0">رصيدك <b class="num"><%= fmt.num(s.guest.points_balance) %></b> نقطة<%= s.vouchers.length ? ` و ${s.vouchers.length} مكافأة جاهزة تُطبق عند الحجز` : '' %>.</p></div>
+<% if (s.vouchers.length) { %>
+  <div class="card" style="background:var(--gold-100);box-shadow:none">
+    <b>مكافآتك جاهزة 🎁</b>
+    <div class="row mt-1"><% s.vouchers.forEach((v) => { %><span class="badge" style="background:#fff"><%= v.name %> · <span class="num"><%= v.code %></span></span><% }) %></div>
+    <p class="small muted mb-0 mt-1">اختر وحدة وستظهر لك المكافآت التي يمكن تطبيقها.</p>
+  </div>
+<% } %>
+<% if (stayed.length) { %>
+  <div class="section-title"><h2>وحدات أقمت فيها</h2></div>
+  <div class="grid grid-3"><% stayed.forEach((u) => { %><%- include('../partials/unit-card', { u, tag: `أقمت هنا ${u.stays > 1 ? u.stays + ' مرات' : ''}`, cta: 'أعد الحجز', primary: true }) %><% }) %></div>
+<% } %>
+<div class="section-title"><h2><%= stayed.length ? 'وحدات مشابهة قد تعجبك' : 'وحدات مقترحة' %></h2><a href="/units" class="small">كل الوحدات</a></div>
+<div class="grid grid-3"><% similar.forEach((u) => { %><%- include('../partials/unit-card', { u }) %><% }) %></div>
+<%- include('../partials/g-foot') %>

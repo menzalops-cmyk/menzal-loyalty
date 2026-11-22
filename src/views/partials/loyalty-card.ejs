@@ -1,0 +1,25 @@
+<% const g = s.guest; %>
+<div class="loyalty-card">
+  <div class="lc-top">
+    <div>
+      <div class="lc-name"><%= locals.publicName || g.full_name %></div>
+      <div class="lc-member"><%= g.member_no %></div>
+    </div>
+    <span class="lc-tier"><i style="background:<%= g.tier_color || '#c8963e' %>"></i><%= g.tier_name || 'عضو' %></span>
+  </div>
+  <% if (!locals.hidePoints) { %>
+  <div class="lc-points"><span class="value num"><%= fmt.num(g.points_balance) %></span><span class="label">نقطة</span></div>
+  <% } %>
+  <div class="lc-meta">
+    <div><b class="num"><%= g.completed_stays %></b>إقامات مكتملة</div>
+    <% if (!locals.hidePoints) { %><div><b class="num"><%= s.vouchers.length %></b>مكافآت متاحة</div><% } %>
+    <% if (s.program && s.program.points_expiry_months) { %><div><b class="num"><%= s.program.points_expiry_months %></b>شهرًا صلاحية النقاط</div><% } %>
+  </div>
+  <% if (s.nextTier && s.tierProgress) { %>
+  <div class="mt-2 small" style="color:rgba(255,255,255,.85)">
+    <% const parts = []; if (s.tierProgress.staysNeeded) parts.push(`${s.tierProgress.staysNeeded} إقامة`); if (s.tierProgress.pointsNeeded) parts.push(`${fmt.num(s.tierProgress.pointsNeeded)} نقطة`); %>
+    <%= parts.length ? `باقي ${parts.join(' و ')} للوصول إلى مستوى ${s.nextTier.name}` : `مؤهل لمستوى ${s.nextTier.name}` %>
+    <div class="progress"><span style="width:<%= s.tierProgress.pct %>%"></span></div>
+  </div>
+  <% } %>
+</div>
