@@ -1,8 +1,8 @@
 <%- include('../partials/doc-head') %>
 <body style="background:var(--brand-900);min-height:100vh;display:grid;place-items:center;padding:1rem">
 <div style="width:100%;max-width:400px">
-  <div class="center mb-2" style="display:flex;justify-content:center"><%- include('../partials/logo', { href: '/admin/login', sub: 'لوحة إدارة الولاء' }) %></div>
   <div class="card">
+  <div class="mb-2" style="display:flex;justify-content:center"><%- include('../partials/logo', { href: '/admin/login', sub: 'لوحة إدارة الولاء' }) %></div>
   <%- include('../partials/flash') %>
   <form method="post" action="/admin/login">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
