@@ -1,5 +1,5 @@
 <%- include('../partials/g-head') %>
-<div class="page-head row between"><div><h1>سجل النقاط</h1><p class="muted mb-0">كل عملية إضافة أو خصم موثقة هنا.</p></div><div class="card flat center" style="padding:.6rem 1.2rem"><div class="small muted">رصيدك</div><b class="num" style="font-size:1.5rem;color:var(--teal-800)"><%= fmt.num(s.guest.points_balance) %></b></div></div>
+<div class="page-head row between"><div><h1>سجل النقاط</h1><p class="muted mb-0">كل عملية إضافة أو خصم موثقة هنا.</p></div><div class="card flat center" style="padding:.6rem 1.2rem"><div class="small muted">رصيدك</div><b class="num" style="font-size:1.5rem;color:var(--brand-800)"><%= fmt.num(s.guest.points_balance) %></b></div></div>
 <% if (s.expiring && s.expiring.pts > 0) { %><div class="alert alert-warn"><b class="num"><%= fmt.num(s.expiring.pts) %></b> نقطة تنتهي في <%= fmt.date(s.expiring.first_at) %></div><% } %>
 <% if (!ledger.length) { %>
   <div class="card empty"><span class="icon">⭐</span>لا توجد عمليات بعد. ستظهر نقاطك هنا بعد أول إقامة مكتملة.</div>

@@ -2,7 +2,7 @@
 <a href="/admin/guests" class="small">→ الضيوف</a>
 <div class="a-top mt-1">
   <div><h1><%= g.full_name %> <% if (g.status !== 'active') { %><span class="badge badge-red">موقوف</span><% } %></h1><p class="muted small mb-0" dir="ltr" style="text-align:right"><%= g.member_no %></p></div>
-  <div class="row"><span class="badge badge-teal"><%= g.tier_name || 'بدون مستوى' %></span></div>
+  <div class="row"><span class="badge badge-brand"><%= g.tier_name || 'بدون مستوى' %></span></div>
 </div>
 <div class="grid grid-4">
   <div class="kpi accent"><div class="k-label">رصيد النقاط</div><div class="k-value num"><%= fmt.num(g.points_balance) %></div><div class="k-sub">مدى الحياة: <span class="num"><%= fmt.num(g.lifetime_points) %></span></div></div>

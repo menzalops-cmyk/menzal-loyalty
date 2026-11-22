@@ -24,7 +24,7 @@
 <% }) %>
 <h2 class="mt-3">قوالب الرسائل</h2>
 <% templates.forEach((t) => { %>
-<details class="box"><summary><span><span class="badge <%= t.category === 'marketing' ? 'badge-gold' : 'badge-teal' %>"><%= t.category === 'marketing' ? 'تسويقية' : 'خدمية' %></span> <%= t.name %></span><span class="tiny muted" dir="ltr"><%= t.key %></span></summary>
+<details class="box"><summary><span><span class="badge <%= t.category === 'marketing' ? 'badge-gold' : 'badge-brand' %>"><%= t.category === 'marketing' ? 'تسويقية' : 'خدمية' %></span> <%= t.name %></span><span class="tiny muted" dir="ltr"><%= t.key %></span></summary>
   <form method="post" action="/admin/messages/template"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="key" value="<%= t.key %>">
     <div class="field"><label>العنوان</label><input name="subject" value="<%= t.subject %>"></div>
     <div class="field"><label>النص</label><textarea name="body"><%= t.body %></textarea><div class="hint var-help">متغيرات عامة: <code>{{name}}</code> <code>{{balance}}</code> <code>{{member_no}}</code> — بالإضافة لمتغيرات خاصة بكل رسالة كما في النص الافتراضي.</div></div>

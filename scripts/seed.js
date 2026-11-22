@@ -48,7 +48,7 @@ export async function seedBase(client, { adminEmail, adminPassword, units = true
       `INSERT INTO loyalty_programs (name, active, points_per_currency, points_per_stay, points_per_night, point_value, points_expiry_months, stamp_goal, claim_window_days)
        VALUES ('نادي ضيوف منزال', true, 1, 50, 0, 0.05, 24, 2, 365) RETURNING *`,
     )).rows[0];
-    const tiers = [['فضي', 0, 0, 1, 'نقاط على كل إقامة', '#7b8a8b', 1], ['ذهبي', 3, 2000, 1.25, 'نقاط إضافية 25% + أولوية تسجيل الخروج المتأخر', '#c8963e', 2], ['ماسي', 8, 6000, 1.5, 'نقاط إضافية 50% + ترقية عند التوفر', '#0f4c4f', 3]];
+    const tiers = [['فضي', 0, 0, 1, 'نقاط على كل إقامة', '#8a8f94', 1], ['ذهبي', 3, 2000, 1.25, 'نقاط إضافية 25% + أولوية تسجيل الخروج المتأخر', '#b77b09', 2], ['ماسي', 8, 6000, 1.5, 'نقاط إضافية 50% + ترقية عند التوفر', '#640211', 3]];
     for (const [name, stays, pts, mult, perks, color, sort] of tiers) {
       await client.query(
         `INSERT INTO tiers (program_id, name, min_stays, min_points, earn_multiplier, perks, color, sort_order) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,

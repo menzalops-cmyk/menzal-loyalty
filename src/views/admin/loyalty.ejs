@@ -46,7 +46,7 @@
         <form method="post" action="/admin/loyalty/tiers"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="program_id" value="<%= prog.id %>">
           <div class="form-grid"><div class="field"><label>الاسم</label><input name="name" required></div><div class="field"><label>الترتيب</label><input type="number" name="sort_order" value="<%= tiers.length + 1 %>"></div>
           <div class="field"><label>حد الإقامات</label><input type="number" name="min_stays" value="0"></div><div class="field"><label>حد النقاط</label><input type="number" name="min_points" value="0"></div>
-          <div class="field"><label>مضاعف النقاط</label><input type="number" step="0.01" name="earn_multiplier" value="1"></div><div class="field"><label>اللون</label><input type="color" name="color" value="#0f4c4f" style="padding:.2rem"></div></div>
+          <div class="field"><label>مضاعف النقاط</label><input type="number" step="0.01" name="earn_multiplier" value="1"></div><div class="field"><label>اللون</label><input type="color" name="color" value="#640211" style="padding:.2rem"></div></div>
           <div class="field"><label>المزايا</label><input name="perks"></div><button class="btn btn-primary btn-sm">إضافة</button>
         </form></details>
     </div>
