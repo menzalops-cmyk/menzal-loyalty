@@ -3,6 +3,8 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import path from 'node:path';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { loadSessions, csrfProtect, flash } from './lib/web.js';
@@ -16,6 +18,11 @@ import adminRoutes from './routes/admin.js';
 import apiRoutes from './routes/api.js';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
+
+// بصمة لكل ملف تصميم/سكربت: تتغير مع أي تعديل فيجلب المتصفح النسخة الجديدة فورًا رغم التخزين المؤقت
+const publicDir = path.join(dir, '..', 'public');
+const assetVersion = (file) => crypto.createHash('sha1').update(fs.readFileSync(path.join(publicDir, file))).digest('hex').slice(0, 10);
+const ASSETS = { css: `/css/app.css?v=${assetVersion('css/app.css')}`, js: `/js/app.js?v=${assetVersion('js/app.js')}` };
 
 export function createApp() {
   const app = express();
@@ -43,7 +50,11 @@ export function createApp() {
   // واجهة التكامل تحتاج الجسم الخام للتحقق من التوقيع، لذلك تُركب قبل محللات النماذج
   app.use('/api', apiRoutes);
 
-  app.use(express.static(path.join(dir, '..', 'public'), { maxAge: config.isProd ? '7d' : 0 }));
+  app.use(express.static(publicDir, {
+    maxAge: config.isProd ? '7d' : 0,
+    // الملفات ذات البصمة تُخزن طويلًا، والصور بدون بصمة تُراجع يوميًا
+    setHeaders: (res, filePath) => { if (filePath.endsWith('.png')) res.setHeader('Cache-Control', 'public, max-age=86400'); },
+  }));
   app.use(express.urlencoded({ extended: true, limit: '200kb' }));
   app.use(express.json({ limit: '200kb' }));
   app.use(cookieParser());
@@ -59,6 +70,7 @@ export function createApp() {
     res.locals.appUrl = config.appUrl;
     res.locals.title = null;
     res.locals.demoMode = config.demoMode;
+    res.locals.assets = ASSETS;
     next();
   });
   app.use(loadSessions);
