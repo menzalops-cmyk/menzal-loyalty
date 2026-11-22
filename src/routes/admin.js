@@ -278,7 +278,7 @@ r.post('/loyalty/tiers', requirePerm('loyalty.manage'), h(async (req, res) => {
   if (b._action === 'delete' && id) {
     await pool.query('DELETE FROM tiers WHERE id = $1', [id]);
   } else {
-    const vals = [str(b.name, 60), int(b.min_stays) ?? 0, int(b.min_points) ?? 0, num(b.earn_multiplier) ?? 1, str(b.perks), str(b.color, 20) || '#640211', int(b.sort_order) ?? 0];
+    const vals = [str(b.name, 60), int(b.min_stays) ?? 0, int(b.min_points) ?? 0, num(b.earn_multiplier) ?? 1, str(b.perks), str(b.color, 20) || '#0f4c4f', int(b.sort_order) ?? 0];
     if (!vals[0]) throw new AppError('اسم المستوى إلزامي');
     if (id) await pool.query('UPDATE tiers SET name=$1, min_stays=$2, min_points=$3, earn_multiplier=$4, perks=$5, color=$6, sort_order=$7 WHERE id=$8', [...vals, id]);
     else await pool.query('INSERT INTO tiers (name, min_stays, min_points, earn_multiplier, perks, color, sort_order, program_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)', [...vals, int(b.program_id)]);

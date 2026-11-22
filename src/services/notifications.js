@@ -77,11 +77,11 @@ function emailHtml(n, guest) {
   return `<!doctype html><html lang="ar" dir="rtl"><body style="margin:0;background:#f7f2ec;font-family:Tahoma,Arial,sans-serif">
   <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px">
   <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden">
-  <tr><td style="background:#640211;padding:16px 24px;text-align:right"><img src="${config.appUrl}/img/menzal-logo-light.png" alt="${esc(brand)}" height="48" style="height:48px;width:auto;display:inline-block"></td></tr>
+  <tr><td style="background:#0f4c4f;padding:16px 24px;text-align:right"><img src="${config.appUrl}/img/menzal-logo-light.png" alt="${esc(brand)}" height="48" style="height:48px;width:auto;display:inline-block"></td></tr>
   <tr><td style="padding:24px;color:#1f2a2b;font-size:16px;line-height:1.9;text-align:right">
-    ${n.subject ? `<h2 style="margin:0 0 12px;font-size:19px;color:#640211">${esc(n.subject)}</h2>` : ''}
+    ${n.subject ? `<h2 style="margin:0 0 12px;font-size:19px;color:#0f4c4f">${esc(n.subject)}</h2>` : ''}
     ${esc(n.body).replace(/\n/g, '<br>')}
-    ${n.link ? `<p style="margin:24px 0 0"><a href="${linkUrl}" style="background:#b77b09;color:#fff;text-decoration:none;padding:12px 22px;border-radius:10px;display:inline-block">افتح حسابك في ${esc(brand)}</a></p>` : ''}
+    ${n.link ? `<p style="margin:24px 0 0"><a href="${linkUrl}" style="background:#c8963e;color:#fff;text-decoration:none;padding:12px 22px;border-radius:10px;display:inline-block">افتح حسابك في ${esc(brand)}</a></p>` : ''}
   </td></tr>
   <tr><td style="padding:16px 24px;color:#7a8586;font-size:12px;text-align:right;border-top:1px solid #eee">
     ${n.category === 'marketing' ? `وصلتك هذه الرسالة لأنك وافقت على استقبال عروض ${esc(brand)}. <a href="${unsub}" style="color:#7a8586">إلغاء الاشتراك</a>` : `رسالة خدمة من ${esc(brand)}.`}

@@ -3,7 +3,7 @@
 <% if (locals.demoMode) { %><div style="background:#9a6b12;color:#fff;text-align:center;font-size:.8rem;padding:.3rem 1rem">نسخة تجريبية — الرسائل لا تُرسل فعليًا ورموز التحقق تظهر على الشاشة</div><% } %>
 <header class="g-header">
   <div class="inner">
-    <%- include('logo', { href: locals.guest ? '/account' : '/', sub: 'نادي الضيوف' }) %>
+    <%- include('logo', { href: locals.guest ? '/account' : '/', sub: 'ضيوف مِنزال 🤍' }) %>
     <% if (locals.guest) { %>
       <nav class="g-nav" aria-label="القائمة الرئيسية">
         <a href="/account" class="<%= path === '/' ? 'active' : '' %>">حسابي</a>

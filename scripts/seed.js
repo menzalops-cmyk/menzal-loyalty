@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import { pool, tx } from '../src/db.js';
 
 export const TEMPLATES = [
-  ['welcome', 'ترحيب بعضو جديد', 'transactional', 'أهلًا بك في نادي ضيوف منزال', 'مرحبًا {{name}}، أصبحت عضوًا في برنامج ولاء منزال. ستجمع النقاط بعد كل إقامة مكتملة، ورابط الإحالة الخاص بك جاهز للمشاركة مع أصدقائك.', null, null],
+  ['welcome', 'ترحيب بعضو جديد', 'transactional', 'أهلًا بك في ضيوف مِنزال 🤍', 'مرحبًا {{name}}، أصبحت عضوًا في برنامج ولاء منزال. ستجمع النقاط بعد كل إقامة مكتملة، ورابط الإحالة الخاص بك جاهز للمشاركة مع أصدقائك.', null, null],
   ['points_earned', 'إضافة نقاط', 'transactional', 'أضفنا {{points}} نقطة إلى حسابك', 'شكرًا لإقامتك في {{unit_name}} يا {{name}}! أضفنا {{points}} نقطة إلى حسابك، ورصيدك الآن {{balance}} نقطة.', 'menzal_points_earned', 'name,balance'],
   ['reward_issued', 'مكافأة جديدة', 'transactional', 'لديك مكافأة جديدة: {{reward_name}}', 'مبروك {{name}}! حصلت على «{{reward_name}}». رمز المكافأة: {{code}} — صالحة حتى {{expires_at}}. استخدمها في حجزك القادم.', 'menzal_reward_issued', 'name'],
   ['tier_upgraded', 'ترقية المستوى', 'transactional', 'تهانينا! أصبحت في مستوى {{tier_name}}', 'مبروك {{name}}، تمت ترقيتك إلى مستوى {{tier_name}}. {{perks}}', null, null],
@@ -46,9 +46,9 @@ export async function seedBase(client, { adminEmail, adminPassword, units = true
   if (!program) {
     program = (await client.query(
       `INSERT INTO loyalty_programs (name, active, points_per_currency, points_per_stay, points_per_night, point_value, points_expiry_months, stamp_goal, claim_window_days)
-       VALUES ('نادي ضيوف منزال', true, 1, 50, 0, 0.05, 24, 2, 365) RETURNING *`,
+       VALUES ('ضيوف مِنزال', true, 1, 50, 0, 0.05, 24, 2, 365) RETURNING *`,
     )).rows[0];
-    const tiers = [['فضي', 0, 0, 1, 'نقاط على كل إقامة', '#8a8f94', 1], ['ذهبي', 3, 2000, 1.25, 'نقاط إضافية 25% + أولوية تسجيل الخروج المتأخر', '#b77b09', 2], ['ماسي', 8, 6000, 1.5, 'نقاط إضافية 50% + ترقية عند التوفر', '#640211', 3]];
+    const tiers = [['فضي', 0, 0, 1, 'نقاط على كل إقامة', '#7b8a8b', 1], ['ذهبي', 3, 2000, 1.25, 'نقاط إضافية 25% + أولوية تسجيل الخروج المتأخر', '#c8963e', 2], ['ماسي', 8, 6000, 1.5, 'نقاط إضافية 50% + ترقية عند التوفر', '#0f4c4f', 3]];
     for (const [name, stays, pts, mult, perks, color, sort] of tiers) {
       await client.query(
         `INSERT INTO tiers (program_id, name, min_stays, min_points, earn_multiplier, perks, color, sort_order) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,

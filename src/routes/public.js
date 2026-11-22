@@ -13,7 +13,7 @@ r.get('/', h(async (req, res) => {
   const program = (await pool.query('SELECT * FROM loyalty_programs WHERE active LIMIT 1')).rows[0];
   const tiers = program ? (await pool.query('SELECT * FROM tiers WHERE program_id = $1 ORDER BY sort_order', [program.id])).rows : [];
   const rewards = (await pool.query(`SELECT * FROM rewards WHERE active AND points_cost IS NOT NULL ORDER BY points_cost LIMIT 4`)).rows;
-  res.render('guest/landing', { title: 'نادي ضيوف منزال', program, tiers, rewards });
+  res.render('guest/landing', { title: 'ضيوف مِنزال', program, tiers, rewards });
 }));
 
 // رابط الإحالة: يحفظ الكود في ملف تعريف ارتباط ثم يوجه للتسجيل
