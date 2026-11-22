@@ -20,7 +20,7 @@
       <form method="post" action="/login/code">
         <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="next" value="<%= next %>">
         <input type="hidden" name="phone" value="<%= phone %>"><input type="hidden" name="signup" value="<%= locals.signup ? '1' : '' %>">
-        <div class="field"><input name="code" class="otp" inputmode="numeric" maxlength="6" required autocomplete="one-time-code" aria-label="رمز التحقق" autofocus></div>
+        <div class="field"><input type="text" name="code" class="otp" inputmode="numeric" maxlength="6" required autocomplete="one-time-code" aria-label="رمز التحقق" autofocus></div>
         <button class="btn btn-primary btn-block">تأكيد</button>
       </form>
       <form method="post" action="/login/code/send" class="center mt-2">

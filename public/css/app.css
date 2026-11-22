@@ -215,7 +215,8 @@ tbody tr:hover { background: var(--sand-50); }
 .steps .step { background: var(--white); border-radius: var(--radius); padding: 1.2rem; box-shadow: var(--shadow); }
 .steps .step::before { counter-increment: s; content: counter(s); width: 34px; height: 34px; border-radius: 50%; background: var(--gold-100); color: var(--gold-600); display: grid; place-items: center; font-weight: 700; margin-bottom: .6rem; }
 .auth-wrap { max-width: 440px; margin: 1.5rem auto; }
-.otp { letter-spacing: .6rem; text-align: center !important; font-size: 1.4rem; direction: ltr; }
+.otp { letter-spacing: .6rem; text-align: center !important; font-size: 1.4rem; direction: ltr; display: block; width: 100% !important; box-sizing: border-box; padding-inline: .5rem !important; }
+.otp:focus { outline: none; }
 
 /* ======================================================================
    لوحة الإدارة

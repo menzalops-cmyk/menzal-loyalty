@@ -6,7 +6,7 @@
     <% if (devCode) { %><div class="alert alert-warn small">نسخة تجريبية (البريد غير مربوط): الرمز <b class="num"><%= devCode %></b></div><% } %>
     <form method="post" action="/verify">
       <input type="hidden" name="_csrf" value="<%= csrf %>">
-      <div class="field"><input name="code" class="otp" inputmode="numeric" maxlength="6" required autocomplete="one-time-code" aria-label="رمز التحقق"></div>
+      <div class="field"><input type="text" name="code" class="otp" inputmode="numeric" maxlength="6" required autocomplete="one-time-code" aria-label="رمز التحقق"></div>
       <button class="btn btn-primary btn-block">تأكيد</button>
     </form>
     <form method="post" action="/verify/resend" class="center mt-2"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike small">أعد إرسال الرمز</button></form>
