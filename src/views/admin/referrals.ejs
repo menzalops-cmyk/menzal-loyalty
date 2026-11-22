@@ -1,0 +1,31 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>الإحالات</h1></div>
+<div class="grid grid-2" style="align-items:start">
+  <form class="card" method="post" action="/admin/referrals/rules">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <h3>قواعد الإحالة</h3>
+    <label class="check"><input type="checkbox" name="active" <%= rules && rules.active ? 'checked' : '' %>>برنامج الإحالة مفعل</label>
+    <div class="form-grid">
+      <div class="field"><label>نقاط للمُحيل</label><input type="number" min="0" name="referrer_points" value="<%= rules ? rules.referrer_points : 0 %>"></div>
+      <div class="field"><label>الحد الأدنى لحجز الصديق</label><input type="number" step="0.01" min="0" name="min_booking_amount" value="<%= rules ? rules.min_booking_amount : 0 %>"></div>
+      <div class="field"><label>مكافأة المُحيل</label><select name="referrer_reward_id"><option value="">—</option><% rewards.forEach((r) => { %><option value="<%= r.id %>" <%= rules && r.id === rules.referrer_reward_id ? 'selected' : '' %>><%= r.name %></option><% }) %></select></div>
+      <div class="field"><label>مكافأة الصديق</label><select name="referee_reward_id"><option value="">—</option><% rewards.forEach((r) => { %><option value="<%= r.id %>" <%= rules && r.id === rules.referee_reward_id ? 'selected' : '' %>><%= r.name %></option><% }) %></select></div>
+      <div class="field"><label>حد الإحالات الناجحة شهريًا لكل ضيف</label><input type="number" min="1" name="max_per_referrer_month" value="<%= rules ? rules.max_per_referrer_month : 10 %>"></div>
+    </div>
+    <p class="hint">الحماية من الإحالات الوهمية: يُرفض تلقائيًا الحساب الذي يطابق بريد/جوال المُحيل، والضيف الذي سبق له الحجز، وكل ضيف يُحال مرة واحدة فقط، ولا تُمنح المكافأة إلا بعد اكتمال إقامة فعلية لا تطابق بيانات المُحيل، وتُعكس إذا استُرد الحجز.</p>
+    <% if (can('referrals.manage')) { %><button class="btn btn-primary">حفظ</button><% } %>
+  </form>
+  <div class="grid grid-2">
+    <div class="kpi"><div class="k-label">ناجحة</div><div class="k-value num"><%= rows.filter((x) => x.status === 'rewarded').length %></div></div>
+    <div class="kpi"><div class="k-label">بانتظار أول إقامة</div><div class="k-value num"><%= rows.filter((x) => x.status === 'pending').length %></div></div>
+    <div class="kpi"><div class="k-label">مرفوضة</div><div class="k-value num"><%= rows.filter((x) => x.status === 'rejected').length %></div></div>
+  </div>
+</div>
+<div class="card mt-3" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>المُحيل</th><th>الصديق</th><th>التاريخ</th><th>الحجز المؤهل</th><th>الحالة</th><th></th></tr></thead>
+  <tbody><% if (!rows.length) { %><tr><td colspan="6" class="empty">لا توجد إحالات بعد</td></tr><% } %>
+  <% rows.forEach((r) => { %><tr><td><a href="/admin/guests/<%= r.referrer_gid %>"><%= r.referrer_name %></a></td><td><a href="/admin/guests/<%= r.referee_gid %>"><%= r.referee_name %></a></td><td class="small"><%= fmt.date(r.created_at) %></td><td dir="ltr" class="small" style="text-align:right"><%= r.booking_ref || '—' %></td>
+    <td><span class="badge badge-<%= r.status %>"><%= L.referral[r.status] %></span><% if (r.reject_reason) { %><div class="tiny muted"><%= r.reject_reason %></div><% } %></td>
+    <td><% if (r.status === 'pending' && can('referrals.manage')) { %><form method="post" action="/admin/referrals/<%= r.id %>/reject" class="row" style="gap:.3rem"><input type="hidden" name="_csrf" value="<%= csrf %>"><input name="reason" required placeholder="سبب" style="width:100px;min-height:32px;padding:.2rem .4rem"><button class="btn btn-danger btn-sm">رفض</button></form><% } %></td></tr><% }) %></tbody>
+</table></div></div>
+<%- include('../partials/a-foot') %>

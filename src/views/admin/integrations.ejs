@@ -1,0 +1,16 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>التكاملات</h1></div>
+<div class="grid grid-3">
+  <div class="card"><h3>منصة الحجز الخارجية</h3><p class="small"><span class="badge <%= webhookConfigured ? 'badge-green' : 'badge-red' %>"><%= webhookConfigured ? 'السر مُعد' : 'غير مُعد' %></span></p>
+    <p class="small muted">ترسل منصة الحجز (PMS / Channel Manager) أحداث الحجوزات إلى:</p><code class="small" dir="ltr" style="word-break:break-all"><%= webhookUrl %></code>
+    <p class="tiny muted mt-1">التوقيع: <span dir="ltr">X-Menzal-Signature: sha256=HMAC(BOOKING_WEBHOOK_SECRET, body)</span>. التفاصيل في docs/INTEGRATIONS.md</p></div>
+  <div class="card"><h3>البريد الإلكتروني</h3><p class="small"><span class="badge <%= providers.email === 'smtp' ? 'badge-green' : 'badge-gold' %>"><%= providers.email %></span></p><p class="small muted mb-0">يُعد عبر متغيرات SMTP_* في ملف البيئة على الخادم (Amazon SES، Mailgun، Google Workspace...).</p></div>
+  <div class="card"><h3>واتساب</h3><p class="small"><span class="badge <%= providers.whatsapp.includes('Cloud') ? 'badge-green' : 'badge-gold' %>"><%= providers.whatsapp %></span></p><p class="small muted mb-0">WhatsApp Business Cloud API الرسمي من Meta: WHATSAPP_TOKEN و WHATSAPP_PHONE_NUMBER_ID، مع قوالب معتمدة مسبقًا.</p></div>
+</div>
+<div class="section-title"><h2>آخر الأحداث الواردة</h2></div>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>الوقت</th><th>المزود</th><th>معرف الحدث</th><th>الحالة</th></tr></thead>
+  <tbody><% if (!events.length) { %><tr><td colspan="4" class="empty">لم تصل أحداث بعد</td></tr><% } %>
+  <% events.forEach((e) => { %><tr><td class="small"><%= fmt.dateTime(e.created_at) %></td><td class="small"><%= e.provider %></td><td class="small" dir="ltr" style="text-align:right"><%= e.event_id %></td><td><%- e.processed_at ? '<span class="badge badge-green">تمت المعالجة</span>' : `<span class="badge badge-red">خطأ</span> <span class="tiny muted">${e.error ? e.error.replace(/</g,'&lt;') : ''}</span>` %></td></tr><% }) %></tbody>
+</table></div></div>
+<%- include('../partials/a-foot') %>

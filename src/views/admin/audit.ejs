@@ -1,0 +1,8 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>سجل التدقيق</h1></div>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>الوقت</th><th>المنفذ</th><th>العملية</th><th>الكيان</th><th>التفاصيل</th></tr></thead>
+  <tbody><% rows.forEach((a) => { %><tr><td class="small nowrap"><%= fmt.dateTime(a.created_at) %></td><td class="small"><%= a.staff_name || a.actor_type %><%= a.actor_type === 'guest' ? ` #${a.actor_id}` : '' %></td><td class="small" dir="ltr" style="text-align:right"><%= a.action %></td><td class="small"><%= a.entity %> <%= a.entity_id || '' %></td>
+    <td class="tiny muted" dir="ltr" style="text-align:left;max-width:340px;word-break:break-word"><%= a.data ? JSON.stringify(a.data).replace(/"password":"[^"]*"/g, '"password":"***"').replace(/"_csrf":"[^"]*",?/g, '').slice(0, 220) : '' %></td></tr><% }) %></tbody>
+</table></div></div>
+<%- include('../partials/a-foot') %>

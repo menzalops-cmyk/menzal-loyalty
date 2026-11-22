@@ -233,7 +233,7 @@ r.post('/units', requirePerm('units.manage'), h(async (req, res) => {
 // ---------- برنامج الولاء: القواعد والمستويات ----------
 r.get('/loyalty', requirePerm('loyalty.manage'), h(async (req, res) => {
   const programs = (await pool.query('SELECT * FROM loyalty_programs ORDER BY active DESC, id')).rows;
-  const program = programs.find((p) => String(p.id) === req.query.program) || programs[0];
+  const program = req.query.program === 'new' ? null : (programs.find((p) => String(p.id) === req.query.program) || programs[0]);
   const tiers = program ? (await pool.query('SELECT t.*, (SELECT count(*)::int FROM guests g WHERE g.tier_id = t.id) AS members FROM tiers t WHERE program_id = $1 ORDER BY sort_order', [program.id])).rows : [];
   const rules = program ? (await pool.query('SELECT * FROM earning_rules WHERE program_id = $1 ORDER BY id DESC', [program.id])).rows : [];
   const rewards = (await pool.query('SELECT id, name FROM rewards ORDER BY name')).rows;

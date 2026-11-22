@@ -1,0 +1,73 @@
+<%- include('../partials/a-head') %>
+<a href="/admin/campaigns" class="small">→ الحملات</a>
+<div class="a-top mt-1"><h1><%= title %></h1><% if (c.id) { %><span class="badge badge-<%= c.status %>"><%= L.campaign[c.status] %><%= c.status === 'scheduled' ? ` · ${fmt.dateTime(c.scheduled_at)}` : '' %></span><% } %></div>
+<% const editable = !c.id || ['draft','scheduled'].includes(c.status); const s = c.segment || {}; %>
+<% if (stats) { %>
+<div class="grid grid-4 mb-2">
+  <div class="kpi accent"><div class="k-label">ضيوف وصلتهم</div><div class="k-value num"><%= stats.reached %></div><div class="k-sub">رسائل خارجية: <span class="num"><%= stats.sent %></span></div></div>
+  <div class="kpi"><div class="k-label">التفاعل (فتح/نقر/قراءة)</div><div class="k-value num"><%= stats.engagementRate %>%</div><div class="k-sub">فتح البريد: <span class="num"><%= stats.opened %></span></div></div>
+  <div class="kpi"><div class="k-label">حجوزات منسوبة</div><div class="k-value num"><%= stats.bookings %></div><div class="k-sub"><span class="num"><%= fmt.money(stats.revenue) %></span></div></div>
+  <div class="kpi"><div class="k-label">تخطي (بدون موافقة)</div><div class="k-value num"><%= stats.skipped %></div><div class="k-sub">فشل: <span class="num"><%= stats.failed %></span> · بالانتظار: <span class="num"><%= stats.queued %></span></div></div>
+</div>
+<% } %>
+<div class="grid grid-2" style="align-items:start">
+  <form class="card" method="post" action="/admin/campaigns">
+    <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= c.id || '' %>">
+    <fieldset <%= editable ? '' : 'disabled' %> style="border:0;padding:0;margin:0">
+    <div class="field"><label>اسم الحملة (داخلي)</label><input name="name" value="<%= c.name || '' %>" required placeholder="مثال: عرض العودة — ضيوف 2026"></div>
+    <fieldset><legend>الجمهور المستهدف</legend>
+      <div class="form-grid">
+        <div class="field"><label>أقام خلال آخر (يوم)</label><input type="number" name="stayed_within_days" value="<%= s.stayed_within_days ?? '' %>"></div>
+        <div class="field"><label>بدون أي حجز منذ (يوم)</label><input type="number" name="inactive_days" value="<%= s.inactive_days ?? '' %>"></div>
+        <div class="field"><label>إقامات من</label><input type="number" name="min_stays" value="<%= s.min_stays ?? '' %>"></div>
+        <div class="field"><label>إقامات حتى</label><input type="number" name="max_stays" value="<%= s.max_stays ?? '' %>"></div>
+        <div class="field"><label>المستوى</label><select name="tier_id"><option value="">الكل</option><% tiers.forEach((t) => { %><option value="<%= t.id %>" <%= String(t.id) === String(s.tier_id) ? 'selected' : '' %>><%= t.name %></option><% }) %></select></div>
+        <div class="field"><label>رصيد نقاط لا يقل عن</label><input type="number" name="min_points" value="<%= s.min_points ?? '' %>"></div>
+        <div class="field"><label>مدينة الضيف</label><input name="home_city" value="<%= s.home_city || '' %>"></div>
+      </div>
+      <label class="check"><input type="checkbox" name="no_rebook" <%= s.no_rebook ? 'checked' : '' %>>لم يحجز مرة أخرى بعد آخر إقامة</label>
+      <label class="check"><input type="checkbox" name="never_stayed" <%= s.never_stayed ? 'checked' : '' %>>أعضاء لم يقيموا بعد</label>
+      <div class="alert alert-info small mb-0">الجمهور الحالي: <b class="num"><%= audience.total %></b> ضيف — يمكن الوصول عبر البريد: <b class="num"><%= audience.email %></b> · واتساب: <b class="num"><%= audience.whatsapp %></b>. (احفظ لتحديث العدد)</div>
+    </fieldset>
+    <fieldset><legend>الرسالة</legend>
+      <div class="field"><label>القنوات</label>
+        <label class="check"><input type="checkbox" name="channels" value="email" <%= c.channels.includes('email') ? 'checked' : '' %>>البريد الإلكتروني (لمن وافق)</label>
+        <label class="check"><input type="checkbox" name="channels" value="whatsapp" <%= c.channels.includes('whatsapp') ? 'checked' : '' %>>واتساب (لمن وافق على العروض عبر واتساب)</label>
+        <div class="hint">تُرسل دائمًا كإشعار داخل حساب الضيف أيضًا.</div></div>
+      <div class="field"><label>العنوان</label><input name="subject" value="<%= c.subject || '' %>"></div>
+      <div class="field"><label>النص</label><textarea name="body" required><%= c.body || '' %></textarea>
+        <div class="hint var-help">المتغيرات: <code>{{name}}</code> <code>{{balance}}</code> <code>{{member_no}}</code> <code>{{code}}</code> <code>{{reward_name}}</code></div></div>
+      <div class="form-grid">
+        <div class="field"><label>مكافأة لكل مستلم <span class="muted">(اختياري)</span></label><select name="reward_id"><option value="">بدون</option><% rewards.forEach((r) => { %><option value="<%= r.id %>" <%= r.id === c.reward_id ? 'selected' : '' %>><%= r.name %></option><% }) %></select></div>
+        <div class="field"><label>رابط الوجهة</label><input name="link" dir="ltr" value="<%= s.link || '/account/rebook' %>"></div>
+        <div class="field"><label>قالب واتساب المعتمد</label><input name="whatsapp_template_name" dir="ltr" value="<%= s.whatsapp_template_name || '' %>" placeholder="menzal_offer"><div class="hint">يُمرَّر {{1}}=الاسم و {{2}}=النص</div></div>
+      </div>
+    </fieldset>
+    <% if (editable) { %><button class="btn btn-primary">حفظ الحملة</button><% } %>
+    </fieldset>
+  </form>
+  <div class="stack">
+    <% if (c.id && editable) { %>
+      <form class="card" method="post" action="/admin/campaigns/<%= c.id %>/test">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h3>إرسال تجريبي</h3>
+        <div class="field"><input name="test_guest" required placeholder="بريد الضيف أو رقم عضويته"></div>
+        <button class="btn btn-ghost btn-sm">أرسل نسخة تجريبية</button>
+      </form>
+      <form class="card" method="post" action="/admin/campaigns/<%= c.id %>/schedule">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h3>جدولة الإرسال</h3>
+        <div class="field"><input type="datetime-local" name="scheduled_at" required></div>
+        <button class="btn btn-ghost btn-sm">جدولة</button>
+      </form>
+      <% if (c.status === 'scheduled') { %><form method="post" action="/admin/campaigns/<%= c.id %>/cancel"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn-danger btn-sm">إلغاء الجدولة</button></form><% } %>
+      <form class="card" method="post" action="/admin/campaigns/<%= c.id %>/send" style="background:var(--gold-100);box-shadow:none">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h3>إرسال الآن</h3><p class="small muted">ستُنشأ الرسائل لكل الجمهور المؤهل وتُرسل عبر الطابور خلال دقيقة. من لم يوافق على القناة يُتخطى تلقائيًا.</p>
+        <button class="btn btn-gold" data-confirm="إطلاق الحملة لـ <%= audience.total %> ضيف؟ لا يمكن التراجع.">إطلاق الحملة</button>
+      </form>
+    <% } %>
+    <% if (!c.id) { %><div class="card"><h3>مثال جاهز</h3><p class="small muted mb-0">الإعداد الافتراضي يستهدف من أقام خلال السنة الماضية ولم يحجز مرة أخرى. احفظ الحملة لترى حجم الجمهور، ثم أرسل نسخة تجريبية قبل الإطلاق.</p></div><% } %>
+  </div>
+</div>
+<%- include('../partials/a-foot') %>

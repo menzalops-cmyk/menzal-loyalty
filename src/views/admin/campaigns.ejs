@@ -1,0 +1,10 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>الحملات التسويقية</h1><a href="/admin/campaigns/new" class="btn btn-primary">حملة جديدة</a></div>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>الحملة</th><th>القنوات</th><th>الحالة</th><th>الموعد</th><th>الوصول</th><th>التفاعل</th><th>حجوزات</th><th>إيرادات</th></tr></thead>
+  <tbody><% if (!rows.length) { %><tr><td colspan="8" class="empty">لا توجد حملات بعد. أنشئ أول حملة لاستعادة الضيوف السابقين.</td></tr><% } %>
+  <% rows.forEach((c) => { %><tr><td><a href="/admin/campaigns/<%= c.id %>"><b><%= c.name %></b></a></td><td class="small"><%= c.channels.map((x) => L.channel[x]).join('، ') %></td><td><span class="badge badge-<%= c.status %>"><%= L.campaign[c.status] %></span></td>
+    <td class="small nowrap"><%= c.status === 'sent' ? fmt.dateTime(c.sent_at) : c.scheduled_at ? fmt.dateTime(c.scheduled_at) : '—' %></td>
+    <td class="num"><%= c.stats ? c.stats.reached : '—' %></td><td class="num"><%= c.stats ? c.stats.engagementRate + '%' : '—' %></td><td class="num"><%= c.stats ? c.stats.bookings : '—' %></td><td class="num"><%= c.stats ? fmt.money(c.stats.revenue) : '—' %></td></tr><% }) %></tbody>
+</table></div></div>
+<%- include('../partials/a-foot') %>

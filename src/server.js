@@ -29,6 +29,8 @@ export function createApp() {
       directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", 'https://fonts.googleapis.com'],
+        // سمات style المضمنة لعرض أشرطة التقدم وألوان المستويات؛ السكربتات تبقى مقيدة بالكامل
+        styleSrcAttr: ["'unsafe-inline'"],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         imgSrc: ["'self'", 'data:', 'https:'],
         scriptSrc: ["'self'"],

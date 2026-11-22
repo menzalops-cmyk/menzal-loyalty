@@ -1,0 +1,20 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>فريق العمل</h1></div>
+<div class="grid grid-2" style="align-items:start">
+  <div class="card" style="padding:0"><div class="table-wrap"><table>
+    <thead><tr><th>الاسم</th><th>الدور</th><th>الحالة</th><th></th></tr></thead>
+    <tbody><% rows.forEach((u) => { %><tr><td><b><%= u.name %></b><div class="tiny muted" dir="ltr" style="text-align:right"><%= u.email %></div></td><td><%= L.role[u.role] %></td><td><span class="badge <%= u.active ? 'badge-green' : 'badge-red' %>"><%= u.active ? 'نشط' : 'موقوف' %></span></td>
+      <td><% if (u.id !== staff.id) { %><form method="post" action="/admin/staff"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="_action" value="toggle"><input type="hidden" name="id" value="<%= u.id %>"><button class="btn btn-ghost btn-sm"><%= u.active ? 'إيقاف' : 'تفعيل' %></button></form><% } %></td></tr><% }) %></tbody>
+  </table></div></div>
+  <form class="card" method="post" action="/admin/staff">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <h3>إضافة عضو</h3>
+    <div class="field"><label>الاسم</label><input name="name" required></div>
+    <div class="field"><label>البريد</label><input type="email" name="email" dir="ltr" required></div>
+    <div class="field"><label>الدور</label><select name="role"><% Object.entries(L.role).forEach(([k, v]) => { %><option value="<%= k %>"><%= v %></option><% }) %></select></div>
+    <div class="field"><label>كلمة المرور المؤقتة</label><input type="password" name="password" minlength="10" required></div>
+    <p class="hint">مدير الولاء: كل شيء عدا فريق العمل. خدمة الضيوف: الضيوف والحجوزات وتعديل نقاط بحد أقصى. التسويق: الحملات والقوالب دون رؤية بيانات التواصل.</p>
+    <button class="btn btn-primary">إضافة</button>
+  </form>
+</div>
+<%- include('../partials/a-foot') %>

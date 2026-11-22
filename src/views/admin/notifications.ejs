@@ -1,0 +1,18 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>سجل الرسائل</h1>
+  <form method="post" action="/admin/jobs/run"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn-ghost btn-sm"><%- include('../partials/icon', { name: 'refresh' }) %> تشغيل المهام الآن</button></form></div>
+<div class="alert <%= providers.email.includes('تطوير') || providers.whatsapp.includes('تطوير') ? 'alert-warn' : 'alert-info' %> small">البريد: <b><%= providers.email %></b> · واتساب: <b><%= providers.whatsapp %></b><%= providers.email.includes('تطوير') ? ' — الرسائل تُسجل هنا دون إرسال فعلي حتى إعداد المزود.' : '' %></div>
+<form class="tabs" method="get">
+  <a href="/admin/notifications" class="<%= !status && !channel ? 'active' : '' %>">الكل</a>
+  <% Object.entries(L.notif).forEach(([k, v]) => { %><a href="?status=<%= k %>" class="<%= status === k ? 'active' : '' %>"><%= v %></a><% }) %>
+  <% Object.entries(L.channel).forEach(([k, v]) => { %><a href="?channel=<%= k %>" class="<%= channel === k ? 'active' : '' %>"><%= v %></a><% }) %>
+</form>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>الوقت</th><th>الضيف</th><th>القناة</th><th>النوع</th><th>الرسالة</th><th>الحالة</th><th>تفاعل</th></tr></thead>
+  <tbody><% if (!rows.length) { %><tr><td colspan="7" class="empty">لا توجد رسائل</td></tr><% } %>
+  <% rows.forEach((n) => { %><tr><td class="small nowrap"><%= fmt.dateTime(n.created_at) %></td><td class="small"><a href="/admin/guests/<%= n.guest_id %>"><%= n.full_name %></a></td><td class="small"><%= L.channel[n.channel] %></td><td class="small"><%= n.category === 'marketing' ? 'تسويقية' : 'خدمية' %></td>
+    <td class="small"><b><%= n.subject %></b><div class="tiny muted"><%= String(n.body).slice(0, 90) %>…</div></td>
+    <td><span class="badge badge-<%= n.status %>"><%= L.notif[n.status] %></span><% if (n.skip_reason || n.error) { %><div class="tiny muted"><%= n.skip_reason || n.error %></div><% } %></td>
+    <td class="tiny"><%= n.clicked_at ? 'نقر' : n.opened_at ? 'فتح' : n.read_at ? 'قرأ' : '' %></td></tr><% }) %></tbody>
+</table></div></div>
+<%- include('../partials/a-foot') %>

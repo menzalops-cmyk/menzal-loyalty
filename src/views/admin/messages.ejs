@@ -1,0 +1,39 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>الرسائل والأتمتة</h1></div>
+<h2>الرسائل التلقائية</h2>
+<p class="muted small">تعمل في الخلفية دوريًا، ولا تُرسل نفس الرسالة للضيف مرتين. الرسائل التسويقية تحترم موافقة الضيف دائمًا.</p>
+<% const paramLabels = { days_before: 'قبل الانتهاء بـ (يوم)', days: 'بعد آخر إقامة بـ (يوم)', days_after: 'بعد المغادرة بـ (يوم)', reward_id: 'مكافأة العودة' }; %>
+<% automations.forEach((a) => { %>
+<details class="box"><summary><span><span class="badge <%= a.active ? 'badge-green' : '' %>"><%= a.active ? 'مفعلة' : 'متوقفة' %></span> <%= a.name %></span><span class="tiny muted">آخر تشغيل: <%= fmt.dateTime(a.last_run_at) %></span></summary>
+  <form method="post" action="/admin/messages/automation"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="key" value="<%= a.key %>">
+    <label class="check"><input type="checkbox" name="active" <%= a.active ? 'checked' : '' %>>مفعلة</label>
+    <div class="form-grid">
+      <% Object.entries(a.params).forEach(([k, v]) => { %>
+        <div class="field"><label><%= paramLabels[k] || k %></label>
+        <% if (k === 'reward_id') { %><select name="param_reward_id"><option value="">بدون</option><% rewards.forEach((r) => { %><option value="<%= r.id %>" <%= r.id === v ? 'selected' : '' %>><%= r.name %></option><% }) %></select>
+        <% } else { %><input type="number" name="param_<%= k %>" value="<%= v ?? '' %>"><% } %></div>
+      <% }) %>
+    </div>
+    <div class="field"><label>القنوات الإضافية</label>
+      <label class="check"><input type="checkbox" name="channels" value="email" <%= a.channels.includes('email') ? 'checked' : '' %>>البريد</label>
+      <label class="check"><input type="checkbox" name="channels" value="whatsapp" <%= a.channels.includes('whatsapp') ? 'checked' : '' %>>واتساب</label></div>
+    <p class="hint">القالب المستخدم: <b><%= a.template_key %></b> (عدّله من القوالب أدناه)</p>
+    <button class="btn btn-primary btn-sm">حفظ</button>
+  </form>
+</details>
+<% }) %>
+<h2 class="mt-3">قوالب الرسائل</h2>
+<% templates.forEach((t) => { %>
+<details class="box"><summary><span><span class="badge <%= t.category === 'marketing' ? 'badge-gold' : 'badge-teal' %>"><%= t.category === 'marketing' ? 'تسويقية' : 'خدمية' %></span> <%= t.name %></span><span class="tiny muted" dir="ltr"><%= t.key %></span></summary>
+  <form method="post" action="/admin/messages/template"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="key" value="<%= t.key %>">
+    <div class="field"><label>العنوان</label><input name="subject" value="<%= t.subject %>"></div>
+    <div class="field"><label>النص</label><textarea name="body"><%= t.body %></textarea><div class="hint var-help">متغيرات عامة: <code>{{name}}</code> <code>{{balance}}</code> <code>{{member_no}}</code> — بالإضافة لمتغيرات خاصة بكل رسالة كما في النص الافتراضي.</div></div>
+    <div class="form-grid">
+      <div class="field"><label>اسم قالب واتساب المعتمد لدى Meta</label><input name="whatsapp_template_name" dir="ltr" value="<%= t.whatsapp_template_name || '' %>"></div>
+      <div class="field"><label>متغيرات القالب بالترتيب</label><input name="whatsapp_params" dir="ltr" value="<%= t.whatsapp_params || '' %>" placeholder="name,balance"></div>
+    </div>
+    <button class="btn btn-primary btn-sm">حفظ القالب</button>
+  </form>
+</details>
+<% }) %>
+<%- include('../partials/a-foot') %>

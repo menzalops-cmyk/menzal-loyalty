@@ -2,8 +2,7 @@
 <div class="a-top"><h1>برنامج الولاء</h1>
   <div class="tabs mb-0"><% programs.forEach((p) => { %><a href="/admin/loyalty?program=<%= p.id %>" class="<%= program && p.id === program.id ? 'active' : '' %>"><%= p.name %><%= p.active ? ' ●' : '' %></a><% }) %><a href="/admin/loyalty?program=new">+ برنامج جديد</a></div>
 </div>
-<% const p = (locals.program && String(locals.program.id) !== 'new' && !(String(locals.programs.find(x => x.id === program?.id)?.id) === undefined)) ? program : {}; const isNew = !program || (typeof program === 'object' && false); %>
-<% const prog = (new URLSearchParams(locals.path.split('?')[1] || '')).get('program') === 'new' ? {} : (program || {}); %>
+<% const prog = locals.program || {}; %>
 <div class="grid grid-2" style="align-items:start">
   <form class="card" method="post" action="/admin/loyalty/program">
     <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= prog.id || '' %>">

@@ -1,0 +1,17 @@
+<%- include('../partials/a-head') %>
+<div class="a-top"><h1>المكافآت والعروض</h1><a href="/admin/rewards/new" class="btn btn-primary">مكافأة / عرض جديد</a></div>
+<div class="card" style="padding:0"><div class="table-wrap"><table>
+  <thead><tr><th>المكافأة</th><th>الفئة</th><th>النوع والقيمة</th><th>النقاط</th><th>الشروط</th><th>صادرة / مستخدمة</th><th>القيمة المستخدمة</th><th>الحالة</th></tr></thead>
+  <tbody><% rows.forEach((r) => { %><tr style="<%= r.active ? '' : 'opacity:.55' %>">
+    <td><a href="/admin/rewards/<%= r.id %>"><b><%= r.name %></b></a></td>
+    <td><span class="badge"><%= L.rewardCategory[r.category] %></span></td>
+    <td class="small"><%= L.rewardType[r.reward_type] %><%= r.reward_type === 'percent_discount' ? ` ${r.value}%` : r.reward_type === 'fixed_discount' ? ` ${fmt.money(r.value)}` : '' %></td>
+    <td class="num"><%= r.points_cost ? fmt.num(r.points_cost) : '—' %></td>
+    <td class="tiny muted"><%= [r.min_booking_amount > 0 ? `حد أدنى ${fmt.money(r.min_booking_amount)}` : null, r.unit_ids ? `${r.unit_ids.length} وحدات` : null, r.valid_until ? `حتى ${fmt.date(r.valid_until)}` : null, r.stay_from || r.stay_until ? 'فترة إقامة محددة' : null, r.total_stock ? `مخزون ${r.total_stock}` : null].filter(Boolean).join(' · ') || 'بدون شروط' %></td>
+    <td class="num"><%= r.issued_count %> / <%= r.used_count %></td>
+    <td class="num"><%= fmt.money(r.used_value) %></td>
+    <td><span class="badge <%= r.active ? 'badge-green' : '' %>"><%= r.active ? 'مفعلة' : 'متوقفة' %></span></td>
+  </tr><% }) %></tbody>
+</table></div></div>
+<p class="hint mt-2">مكافآت «كتالوج النقاط» تظهر للضيوف للاستبدال. مكافآت الأختام والإحالة والحملات تُمنح تلقائيًا ولا تحتاج تكلفة نقاط.</p>
+<%- include('../partials/a-foot') %>

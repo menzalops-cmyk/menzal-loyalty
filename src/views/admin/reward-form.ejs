@@ -1,0 +1,40 @@
+<%- include('../partials/a-head') %>
+<a href="/admin/rewards" class="small">→ المكافآت</a>
+<div class="a-top mt-1"><h1><%= title %></h1></div>
+<% const r = reward; const sel = (a, b) => String(a) === String(b) ? 'selected' : ''; %>
+<form class="card" method="post" action="/admin/rewards" style="max-width:860px">
+  <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= r.id || '' %>">
+  <fieldset><legend>الأساسيات</legend>
+    <div class="field"><label>الاسم</label><input name="name" value="<%= r.name || '' %>" required></div>
+    <div class="field"><label>الوصف (يظهر للضيف)</label><input name="description" value="<%= r.description || '' %>"></div>
+    <div class="form-grid">
+      <div class="field"><label>النوع</label><select name="reward_type"><% Object.entries(L.rewardType).forEach(([k, v]) => { %><option value="<%= k %>" <%= sel(k, r.reward_type) %>><%= v %></option><% }) %></select></div>
+      <div class="field"><label>الفئة</label><select name="category"><% Object.entries(L.rewardCategory).forEach(([k, v]) => { %><option value="<%= k %>" <%= sel(k, r.category) %>><%= v %></option><% }) %></select></div>
+      <div class="field"><label>القيمة (نسبة أو مبلغ)</label><input type="number" step="0.01" min="0" name="value" value="<%= r.value ?? 0 %>"></div>
+      <div class="field"><label>سقف الخصم (للنسبة)</label><input type="number" step="0.01" name="max_discount" value="<%= r.max_discount ?? '' %>"></div>
+      <div class="field"><label>تكلفة النقاط</label><input type="number" min="1" name="points_cost" value="<%= r.points_cost ?? '' %>"><div class="hint">فارغ = لا تُستبدل بالنقاط</div></div>
+      <div class="field"><label>صلاحية القسيمة بعد إصدارها (أيام)</label><input type="number" min="1" name="voucher_validity_days" value="<%= r.voucher_validity_days ?? 90 %>"></div>
+    </div>
+  </fieldset>
+  <fieldset><legend>الشروط</legend>
+    <div class="form-grid">
+      <div class="field"><label>الحد الأدنى لقيمة الحجز</label><input type="number" step="0.01" min="0" name="min_booking_amount" value="<%= r.min_booking_amount ?? 0 %>"></div>
+      <div class="field"><label>حد أدنى للإقامات المكتملة</label><input type="number" min="0" name="min_completed_stays" value="<%= r.min_completed_stays ?? 0 %>"><div class="hint">مثلًا 1 لمكافآت الضيوف المتكررين</div></div>
+      <div class="field"><label>أدنى مستوى ولاء</label><select name="min_tier_id"><option value="">الكل</option><% tiers.forEach((t) => { %><option value="<%= t.id %>" <%= sel(t.id, r.min_tier_id) %>><%= t.name %></option><% }) %></select></div>
+      <div class="field"><label>حد لكل ضيف</label><input type="number" min="1" name="per_guest_limit" value="<%= r.per_guest_limit ?? '' %>" placeholder="بلا حد"></div>
+      <div class="field"><label>الكمية الإجمالية</label><input type="number" min="1" name="total_stock" value="<%= r.total_stock ?? '' %>" placeholder="بلا حد"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>متاحة للاستبدال من</label><input type="date" name="valid_from" value="<%= r.valid_from || '' %>"></div>
+      <div class="field"><label>حتى</label><input type="date" name="valid_until" value="<%= r.valid_until || '' %>"></div>
+      <div class="field"><label>تواريخ الإقامة المسموحة من</label><input type="date" name="stay_from" value="<%= r.stay_from || '' %>"></div>
+      <div class="field"><label>حتى</label><input type="date" name="stay_until" value="<%= r.stay_until || '' %>"><div class="hint">للعروض الموسمية والإجازات</div></div>
+    </div>
+    <div class="field"><label>الوحدات المشمولة <span class="muted">(بدون اختيار = كل الوحدات)</span></label>
+      <select name="unit_ids" multiple><% units.forEach((u) => { %><option value="<%= u.id %>" <%= (r.unit_ids || []).map(Number).includes(u.id) ? 'selected' : '' %>><%= u.name %> — <%= u.city %></option><% }) %></select></div>
+  </fieldset>
+  <label class="check"><input type="checkbox" name="active" <%= r.active ? 'checked' : '' %>>مفعلة</label>
+  <p class="hint">القسائم التي سبق إصدارها تبقى صالحة وفق تاريخ انتهائها حتى لو أوقفت المكافأة.</p>
+  <button class="btn btn-primary">حفظ</button>
+</form>
+<%- include('../partials/a-foot') %>
