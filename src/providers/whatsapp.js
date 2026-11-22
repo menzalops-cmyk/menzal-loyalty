@@ -7,7 +7,7 @@ export const whatsappConfigured = () => Boolean(config.whatsapp.token && config.
 /** params: قيم متغيرات القالب بالترتيب {{1}}, {{2}}, ... */
 export async function sendWhatsAppTemplate({ to, templateName, params = [], fallbackText }) {
   if (!whatsappConfigured()) {
-    if (config.isProd) throw new Error('مزود واتساب غير مُعد (WHATSAPP_TOKEN / WHATSAPP_PHONE_NUMBER_ID)');
+    if (config.isProd && !config.demoMode) throw new Error('مزود واتساب غير مُعد (WHATSAPP_TOKEN / WHATSAPP_PHONE_NUMBER_ID)');
     if (!config.isTest) console.log(`[whatsapp:dev-log] → ${to} | ${templateName || 'no-template'} | ${fallbackText?.slice(0, 60)}`);
     return { id: `dev-log-${Date.now()}`, mode: 'dev-log' };
   }

@@ -1,5 +1,6 @@
 <%- include('../partials/doc-head') %>
 <body>
+<% if (locals.demoMode) { %><div style="background:#9a6b12;color:#fff;text-align:center;font-size:.8rem;padding:.3rem 1rem;position:relative;z-index:30">نسخة تجريبية — الرسائل لا تُرسل فعليًا ورموز التحقق تظهر على الشاشة</div><% } %>
 <header class="g-header" style="background:transparent;border:0;position:absolute;inset-inline:0">
   <div class="inner"><%- include('../partials/logo', { light: true, sub: 'نادي الضيوف' }) %>
   <div class="row"><a href="/login" class="btn btn-sm" style="color:#fff">دخول</a><a href="/signup" class="btn btn-gold btn-sm">انضم مجانًا</a></div></div>

@@ -11,7 +11,10 @@ export const config = {
   isProd: process.env.NODE_ENV === 'production',
   isTest: process.env.NODE_ENV === 'test',
   port: Number(process.env.PORT || 3000),
-  appUrl: (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, ''),
+  appUrl: (process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000').replace(/\/$/, ''),
+  // وضع التجربة: يعرض رموز التحقق على الشاشة ويسجل الرسائل بدل إرسالها عندما لا يكون مزود البريد/واتساب مُعدًا.
+  // للتجربة الداخلية فقط — يجب إيقافه (DEMO_MODE=false) وإعداد SMTP قبل استقبال ضيوف حقيقيين.
+  demoMode: process.env.DEMO_MODE === 'true',
   databaseUrl: required('DATABASE_URL', 'postgres://menzal:menzal_dev@localhost:5432/menzal'),
   appSecret: required('APP_SECRET', process.env.NODE_ENV === 'production' ? undefined : 'dev-secret-not-for-production'),
   runWorker: process.env.RUN_WORKER !== 'false',

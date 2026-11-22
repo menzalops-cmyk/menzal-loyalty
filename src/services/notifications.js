@@ -161,8 +161,8 @@ export async function processQueue({ limit = 100 } = {}) {
 
 export function providerStatus() {
   return {
-    email: emailConfigured() ? 'smtp' : (config.isProd ? 'غير مُعد' : 'وضع السجل (تطوير)'),
-    whatsapp: whatsappConfigured() ? 'WhatsApp Cloud API' : (config.isProd ? 'غير مُعد' : 'وضع السجل (تطوير)'),
+    email: emailConfigured() ? 'smtp' : (config.isProd && !config.demoMode ? 'غير مُعد' : 'وضع السجل (تطوير)'),
+    whatsapp: whatsappConfigured() ? 'WhatsApp Cloud API' : (config.isProd && !config.demoMode ? 'غير مُعد' : 'وضع السجل (تطوير)'),
   };
 }
 

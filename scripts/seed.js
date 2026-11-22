@@ -98,7 +98,7 @@ export async function seedBase(client, { adminEmail, adminPassword, units = true
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const demo = process.argv.includes('--demo');
+  const demo = process.argv.includes('--demo') || process.env.SEED_DEMO === 'true';
   (async () => {
     await tx((c) => seedBase(c, { adminEmail: process.env.ADMIN_EMAIL, adminPassword: process.env.ADMIN_PASSWORD }));
     console.log('✔ base configuration seeded');

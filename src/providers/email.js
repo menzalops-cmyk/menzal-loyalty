@@ -7,7 +7,7 @@ export const emailConfigured = () => Boolean(config.smtp.host);
 
 export async function sendEmail({ to, subject, html, text, headers = {} }) {
   if (!emailConfigured()) {
-    if (config.isProd) throw new Error('مزود البريد غير مُعد (SMTP_HOST)');
+    if (config.isProd && !config.demoMode) throw new Error('مزود البريد غير مُعد (SMTP_HOST)');
     if (!config.isTest) console.log(`[email:dev-log] → ${to} | ${subject}`);
     return { id: `dev-log-${Date.now()}`, mode: 'dev-log' };
   }

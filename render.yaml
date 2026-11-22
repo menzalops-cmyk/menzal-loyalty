@@ -1,0 +1,51 @@
+# نشر منزال على Render بنقرة واحدة (Blueprint)
+# Dashboard → New → Blueprint → اختر مستودع menzal-loyalty
+databases:
+  - name: menzal-db
+    databaseName: menzal
+    user: menzal
+    plan: free            # للتجربة. قاعدة Render المجانية تنتهي بعد 30 يومًا — رقّها إلى basic قبل الاستخدام الفعلي
+    region: frankfurt
+
+services:
+  - type: web
+    name: menzal-loyalty
+    runtime: node
+    plan: free            # للتجربة (ينام بعد 15 دقيقة خمول). للاستخدام الفعلي: starter
+    region: frankfurt
+    buildCommand: npm ci
+    startCommand: npm run migrate && node scripts/seed.js && node src/index.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: menzal-db
+          property: connectionString
+      - key: APP_SECRET
+        generateValue: true
+      - key: BOOKING_WEBHOOK_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false         # يُطلب منك عند الإنشاء
+      - key: ADMIN_PASSWORD
+        sync: false         # يُطلب منك عند الإنشاء
+      - key: DEMO_MODE
+        value: "true"       # غيّرها إلى false بعد إعداد SMTP
+      - key: SEED_DEMO
+        value: "true"       # بيانات تجريبية للاستكشاف — غيّرها إلى false قبل الإطلاق
+      - key: RUN_WORKER
+        value: "true"
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false

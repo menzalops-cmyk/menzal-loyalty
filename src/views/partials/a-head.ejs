@@ -1,5 +1,6 @@
 <%- include('doc-head') %>
 <body style="background:var(--sand-100)">
+<% if (locals.demoMode) { %><div style="background:#9a6b12;color:#fff;text-align:center;font-size:.8rem;padding:.3rem 1rem">نسخة تجريبية — الرسائل لا تُرسل فعليًا ورموز التحقق تظهر على الشاشة</div><% } %>
 <div class="a-mobilebar"><%- include('logo', { light: true, href: '/admin', sub: 'لوحة الإدارة' }) %><button type="button" data-toggle="#aside" aria-label="القائمة"><%- include('icon', { name: 'menu' }) %></button></div>
 <div class="a-shell">
 <aside class="a-side" id="aside">

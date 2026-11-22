@@ -58,6 +58,7 @@ export function createApp() {
     res.locals.brand = getSettingSync('brand_name', 'منزال');
     res.locals.appUrl = config.appUrl;
     res.locals.title = null;
+    res.locals.demoMode = config.demoMode;
     next();
   });
   app.use(loadSessions);

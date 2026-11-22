@@ -82,7 +82,7 @@ export async function sendVerificationCode({ guestId = null, target, channel }) 
     await sendWhatsAppTemplate({ to: t, templateName: 'menzal_otp', params: [code], fallbackText: msg });
   }
   // في بيئة التطوير فقط: يُعاد الرمز لعرضه لأن مزود البريد غير مُعد
-  return { target: t, devCode: !config.isProd && !process.env.SMTP_HOST ? code : undefined };
+  return { target: t, devCode: (!config.isProd || config.demoMode) && !process.env.SMTP_HOST ? code : undefined };
 }
 
 async function consumeCode(client, target, code) {
