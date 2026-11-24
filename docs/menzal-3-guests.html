@@ -404,21 +404,35 @@ function endCard(t){
   x.fillStyle='#fff';x.font='900 58px Cairo';x.fillText('احجز الحين',0,6);x.restore();
 }
 
-function render(t){
+function render(tau){
+  const t=warp(tau);
   x.setTransform(1,0,0,1,0,0);x.globalAlpha=1;x.direction='ltr';
   drawSky(t);drawBuilding(t);drawScene(t);
   charsFamily(t);charsGuys(t);charsChill(t);cleaning(t);
   // night dim on interior already; vignette
   header(t);
   typesScene(t);endCard(t);
-  if(t<52) caption(t);
+  if(t<52) caption(tau);
 }
-window.render=render;window.DUR=DUR;
+
+// ---------- sync to voice-over ----------
+const VO_CHUNKS=[[[0.05, 2.88, "شقة وحدة بنحط فيها ثلاث ضيوف في أسبوع"]], [[3.23, 3.91, "أول ضيف"], [4.11, 4.58, "عائلة"]], [[4.85, 6.38, "خمس شناط لليلتين!"]], [[6.78, 9.96, "الأم أول شي تفتح المطبخ وتطلّع الترمس من بيتهم"]], [[10.3, 10.88, "والأطفال؟"], [11.11, 12.45, "اكتشفوا الريموت"]], [[12.76, 15.26, "ونامت العائلة كلها بغرفة وحدة"]], [[15.57, 17.42, "طلعوا والشقة ترجع جديدة"]], [[17.82, 18.54, "ثاني ضيف"], [18.73, 19.25, "الشباب"]], [[19.55, 20.17, "أول سؤال"], [20.51, 21.59, "وش باسوورد الواي فاي؟"]], [[21.86, 22.78, "ثلاث بلايستيشن"], [23.03, 24.34, "وجلسة لين الفجر"]], [[24.68, 26.7, "البيتزا وصلت الساعة ثلاث"]], [[26.91, 28.51, "والكل نام على الكنب"]], [[28.71, 31.02, "وترجع الشقة ولا كأن أحد مر"]], [[31.38, 32.21, "ثالث ضيف"], [32.46, 33.4, "جا يرتاح بس"]], [[33.67, 34.64, "ستارة مسكّرة"], [34.86, 36.1, "ونوم لين العصر"]], [[36.33, 37.46, "قهوة على البلكونة"], [37.71, 39.09, "وطلب الطلعة يوم زيادة"]], [[39.38, 40.55, "وأنت من أي نوع؟"]], [[40.85, 41.33, "مِنزال"], [41.63, 43.73, "أي نوع كنت مكانك جاهز"]]];
+const VO_END=43.73;
+WORDS.length=0;
+VO_CHUNKS.forEach(line=>line.forEach(([a,b,s])=>{const ws=s.split(' ');const wt=ws.map(w=>w.replace(/[!؟?]/g,'').length+2);const tot=wt.reduce((p,q)=>p+q,0);let t=a;
+  ws.forEach((w,i)=>{const d=(b-a)*wt[i]/tot;WORDS.push([t,t+d,w]);t+=d;});}));
+// hold each word until the next one starts (no flicker in pauses)
+for(let i=0;i<WORDS.length-1;i++){if(WORDS[i+1][0]-WORDS[i][1]<0.6)WORDS[i][1]=WORDS[i+1][0];}
+const WARP=VO_CHUNKS.map((l,i)=>[i===0?0:l[0][0],LINES[i][0]]).concat([[VO_END,57],[VO_END+1.8,59]]);
+function warp(tau){for(let i=0;i<WARP.length-1;i++){const [a,A]=WARP[i],[b,B]=WARP[i+1];if(tau<=b)return A+(B-A)*cl((tau-a)/(b-a));}return 59;}
+const DUR_VO=VO_END+1.8;
+
+window.render=render;window.DUR=DUR_VO;
 window.ready=Promise.all([document.fonts.load('900 40px Cairo'),document.fonts.load('700 40px Cairo'),new Promise(r=>{const i=document.getElementById('logo');i.complete?r():i.onload=r;})]);
 
 // ---------- player ----------
 let start=null,raf=null;
-function loop(now){if(start===null)start=now;const t=(now-start)/1000;render(Math.min(t,DUR));if(t<DUR)raf=requestAnimationFrame(loop);else{start=null;onEnd&&onEnd();}}
+function loop(now){if(start===null)start=now;const t=(now-start)/1000;render(Math.min(t,DUR_VO));if(t<DUR_VO)raf=requestAnimationFrame(loop);else{start=null;onEnd&&onEnd();}}
 let onEnd=null;
 function play(){cancelAnimationFrame(raf);start=null;raf=requestAnimationFrame(loop);}
 window.ready.then(()=>render(0));
